@@ -1,0 +1,686 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<style>
+  /* ── Dashboard Cards ── */
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+  }
+  .stat-icon.blue {
+    background: rgba(78, 143, 255, 0.15);
+    color: var(--primary);
+  }
+  .stat-icon.green {
+    background: rgba(0, 196, 140, 0.15);
+    color: var(--success);
+  }
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .stat-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* ── Section Titles ── */
+  .section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* ── Drag & Drop Upload ── */
+  .upload-box {
+    background: var(--card-bg);
+    border: 2px dashed rgba(78, 143, 255, 0.3);
+    border-radius: var(--radius);
+    padding: 3rem 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .upload-box:hover, .upload-box.dragover {
+    background: rgba(78, 143, 255, 0.05);
+    border-color: var(--primary);
+  }
+  .upload-icon {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+  .upload-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  .upload-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .upload-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .upload-link:hover { text-decoration: underline; }
+
+  /* ── Progress Bar ── */
+  .progress-container {
+    margin-top: 1rem;
+  }
+  .progress {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .progress-bar {
+    background: var(--danger); /* Using red to match the screenshot */
+  }
+  .progress-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+  }
+  .status-text {
+    font-size: 0.8rem;
+    color: var(--danger);
+    text-align: center;
+  }
+
+  /* ── Table ── */
+  .table-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0;
+    overflow: hidden;
+  }
+  .table-custom {
+    margin-bottom: 0;
+    color: var(--text);
+  }
+  .table-custom th {
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+  }
+  .table-custom td {
+    background: transparent;
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+  .table-custom tr:last-child td { border-bottom: none; }
+  .table-custom tbody tr:hover { background: rgba(255,255,255,0.02); }
+  
+  .file-name { font-weight: 500; display: flex; align-items: center; gap: 0.75rem; }
+  .file-name i { color: var(--primary); font-size: 1.1rem; }
+  .badge-version {
+    background: rgba(78, 143, 255, 0.15);
+    color: var(--primary);
+    padding: 0.35em 0.65em;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .date-text { color: var(--text-muted); font-size: 0.85rem; }
+
+  /* ── Floating Chatbot Sidebar ── */
+  #aiSidebar {
+    position: fixed;
+    top: 80px;
+    right: -400px; /* Hidden by default */
+    width: 380px;
+    height: calc(100vh - 100px);
+    background: rgba(22, 33, 62, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius) 0 0 var(--radius);
+    box-shadow: -5px 0 30px rgba(0,0,0,0.5);
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+  }
+  #aiSidebar.open {
+    right: 0;
+  }
+
+  /* Toggle Button */
+  #aiToggleBtn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4e8fff, #8B5CF6);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(78, 143, 255, 0.4);
+    cursor: pointer;
+    z-index: 1051;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  #aiToggleBtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(78, 143, 255, 0.6);
+  }
+  #aiToggleBtn i {
+    font-size: 1.5rem;
+  }
+
+  /* Chat Header */
+  .chat-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius) 0 0 0;
+  }
+  .chat-header-title {
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .chat-header-title i { color: #00c48c; }
+  .btn-close-chat {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+  .btn-close-chat:hover { color: var(--text); }
+
+  /* Chat Body */
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Chat Bubbles */
+  .chat-bubble {
+    max-width: 85%;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+  .chat-user {
+    align-self: flex-end;
+    background: var(--primary);
+    color: white;
+    border-bottom-right-radius: 2px;
+  }
+  .chat-ai {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 2px;
+  }
+
+  /* Typing animation */
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 0.5rem 1rem;
+    align-self: flex-start;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    border-bottom-left-radius: 2px;
+  }
+  .typing-dot {
+    width: 6px; height: 6px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+  }
+  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); background: var(--primary); }
+  }
+
+  /* Chat Input */
+  .chat-input-area {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    background: rgba(0,0,0,0.2);
+  }
+  .chat-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 0.25rem 0.25rem 0.25rem 1rem;
+  }
+  .chat-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 0.9rem;
+    padding: 0.5rem 0;
+    outline: none;
+  }
+  .chat-input::placeholder { color: var(--text-muted); }
+  .btn-send {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-send:hover { background: var(--accent-glow); }
+
+  /* Suggestion Pills */
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .suggestion-pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .suggestion-pill:hover {
+    background: rgba(78, 143, 255, 0.1);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-5 px-3">
+
+  <!-- ── Top Stats Row ── -->
+  <div class="row g-4 mb-5">
+    <div class="col-12 col-md-6">
+      <div class="stat-card">
+        <div class="stat-icon blue">
+          <i class="bi bi-files"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ total_files }}</div>
+          <div class="stat-label">
+            <i class="bi bi-dot" style="font-size:1.5rem; margin-right:-8px;"></i>
+            Total Unique Files
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6">
+      <div class="stat-card">
+        <div class="stat-icon green">
+          <i class="bi bi-clock-history"></i>
+        </div>
+        <div>
+          <div class="stat-value">{{ total_versions }}</div>
+          <div class="stat-label">
+            <i class="bi bi-dot" style="font-size:1.5rem; margin-right:-8px;"></i>
+            Total Versions Stored
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main Content Row ── -->
+  <div class="row g-4">
+    
+    <!-- Upload Section -->
+    <div class="col-12 col-lg-5">
+      <div class="section-title">
+        <i class="bi bi-cloud-arrow-up"></i> UPLOAD FILE
+      </div>
+      
+      <div class="upload-box" id="dropZone">
+        <i class="bi bi-cloud-arrow-up upload-icon"></i>
+        <div class="upload-title">Drag & Drop your file here</div>
+        <div class="upload-subtitle">
+          or <span class="upload-link">browse to upload</span>
+        </div>
+        <div class="mt-3 text-muted" style="font-size: 0.75rem;">
+          All file types supported • Max 50 MB
+        </div>
+        <input type="file" id="fileInput" class="d-none">
+      </div>
+
+      <!-- Upload Progress Container (Hidden by default) -->
+      <div id="progressWrap" class="progress-container d-none">
+        <div class="progress-text">
+          <span id="uploadFilename" class="text-truncate" style="max-width: 80%;">filename.txt</span>
+          <span id="uploadPct">0%</span>
+        </div>
+        <div class="progress">
+          <div id="progressFill" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+        </div>
+        <div id="progressStatus" class="status-text">Uploading...</div>
+      </div>
+    </div>
+
+    <!-- Recent Uploads Table -->
+    <div class="col-12 col-lg-7">
+      <div class="section-title">
+        <i class="bi bi-clock-history"></i> RECENT UPLOADS
+      </div>
+      
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="table table-custom">
+            <thead>
+              <tr>
+                <th>FILE NAME</th>
+                <th>VERSION</th>
+                <th>DATE</th>
+              </tr>
+            </thead>
+            <tbody id="recentBody">
+              {% if recent %}
+                {% for f in recent %}
+                <tr>
+                  <td>
+                    <div class="file-name">
+                      <i class="bi bi-file-earmark-fill"></i>
+                      {{ f.original_name }}
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge-version">v{{ f.version }}</span>
+                  </td>
+                  <td>
+                    <div class="date-text"><i class="bi bi-calendar3 me-1"></i>{{ f.timestamp }}</div>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="3" class="text-center text-muted py-4">No files uploaded yet.</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Floating AI Sidebar ── -->
+<div id="aiSidebar">
+  <div class="chat-header">
+    <div class="chat-header-title">
+      <i class="bi bi-robot"></i> AI Assistant
+    </div>
+    <button class="btn-close-chat" id="closeAiBtn"><i class="bi bi-x-lg"></i></button>
+  </div>
+  
+  <div class="chat-body" id="chatContainer">
+    <div class="chat-bubble chat-ai">
+      Hello! I'm your Cloud AI Assistant. I can help you understand your storage usage, recover files, or explain duplicate prevention.
+    </div>
+  </div>
+
+  <div class="chat-input-area">
+    <div class="suggestions">
+      <div class="suggestion-pill">Storage usage</div>
+      <div class="suggestion-pill">Duplicate prevention</div>
+      <div class="suggestion-pill">Recent uploads</div>
+    </div>
+    <div class="chat-input-wrapper">
+      <input type="text" id="chatInput" class="chat-input" placeholder="Ask a question..." autocomplete="off">
+      <button class="btn-send" id="sendBtn"><i class="bi bi-send-fill"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating Action Button -->
+<button id="aiToggleBtn" title="Open AI Assistant">
+  <i class="bi bi-chat-quote-fill"></i>
+</button>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // ── Upload Logic ──
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const progressWrap = document.getElementById('progressWrap');
+  const progressFill = document.getElementById('progressFill');
+  const uploadPct = document.getElementById('uploadPct');
+  const uploadFName = document.getElementById('uploadFilename');
+  const progStatus = document.getElementById('progressStatus');
+
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+  });
+  function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+  });
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+  });
+
+  dropZone.addEventListener('drop', handleDrop, false);
+  dropZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', function() {
+    if (this.files.length > 0) uploadFile(this.files[0]);
+  });
+
+  function handleDrop(e) {
+    let dt = e.dataTransfer;
+    let files = dt.files;
+    if (files.length > 0) uploadFile(files[0]);
+  }
+
+  function uploadFile(file) {
+    progressWrap.classList.remove('d-none');
+    uploadFName.textContent = file.name;
+    uploadPct.textContent = '0%';
+    progressFill.style.width = '0%';
+    
+    // Reset colors to primary (blue) while uploading
+    progressFill.style.backgroundColor = 'var(--primary)';
+    progStatus.style.color = 'var(--primary)';
+    progStatus.textContent = 'Uploading...';
+
+    let formData = new FormData();
+    formData.append('file', file);
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '{{ url_for("upload") }}', true);
+
+    xhr.upload.addEventListener('progress', function(e) {
+      if (e.lengthComputable) {
+        let percent = Math.round((e.loaded / e.total) * 100);
+        progressFill.style.width = percent + '%';
+        uploadPct.textContent = percent + '%';
+      }
+    });
+
+    xhr.onload = function() {
+      let data = {};
+      try { data = JSON.parse(xhr.responseText); } catch(e) {}
+      
+      if (xhr.status === 200 && data.success) {
+        progressFill.style.backgroundColor = 'var(--success)';
+        progStatus.style.color = 'var(--success)';
+        progStatus.textContent = 'Upload successful!';
+        
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        progressFill.style.backgroundColor = 'var(--danger)';
+        progStatus.style.color = 'var(--danger)';
+        progStatus.textContent = data.error || 'Server error: ' + xhr.status;
+      }
+    };
+
+    xhr.onerror = function() {
+      progressFill.style.backgroundColor = 'var(--danger)';
+      progStatus.style.color = 'var(--danger)';
+      progStatus.textContent = 'Network error during upload.';
+    };
+
+    xhr.send(formData);
+  }
+
+  // ── Chatbot Logic ──
+  const sidebar = document.getElementById('aiSidebar');
+  const toggleBtn = document.getElementById('aiToggleBtn');
+  const closeBtn = document.getElementById('closeAiBtn');
+  const chatContainer = document.getElementById('chatContainer');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const suggestionPills = document.querySelectorAll('.suggestion-pill');
+
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    if (sidebar.classList.contains('open')) {
+      chatInput.focus();
+    }
+  }
+
+  toggleBtn.addEventListener('click', toggleSidebar);
+  closeBtn.addEventListener('click', toggleSidebar);
+
+  function scrollToBottom() {
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+
+  function appendMessage(text, sender) {
+    const div = document.createElement('div');
+    div.className = `chat-bubble chat-${sender}`;
+    // Format bold text from markdown
+    const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    div.innerHTML = formattedText;
+    chatContainer.appendChild(div);
+    scrollToBottom();
+  }
+
+  function showTyping() {
+    const div = document.createElement('div');
+    div.id = 'typingIndicator';
+    div.className = 'typing-indicator';
+    div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    chatContainer.appendChild(div);
+    scrollToBottom();
+  }
+
+  function removeTyping() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) indicator.remove();
+  }
+
+  async function sendMessage(text) {
+    if (!text.trim()) return;
+    
+    appendMessage(text, 'user');
+    chatInput.value = '';
+    showTyping();
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      removeTyping();
+      if (data.success) {
+        appendMessage(data.response, 'ai');
+      } else {
+        appendMessage('Error: ' + data.error, 'ai');
+      }
+    } catch (err) {
+      removeTyping();
+      appendMessage('Connection error.', 'ai');
+    }
+  }
+
+  sendBtn.addEventListener('click', () => sendMessage(chatInput.value));
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage(chatInput.value);
+  });
+
+  suggestionPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      sendMessage(pill.textContent);
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard — CloudBackup System{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Stat Cards ── */
+  .stat-card {
+    background: linear-gradient(145deg, #16213e, #0f2040);
+    border: 1px solid rgba(78,143,255,0.12);
+    border-radius: 16px;
+    padding: 1.6rem 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(78,143,255,0.04), transparent);
+    pointer-events: none;
+  }
+  .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
+
+  .stat-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+  }
+  .stat-icon.blue  { background: rgba(78,143,255,0.15); color: #4e8fff; }
+  .stat-icon.green { background: rgba(0,196,140,0.15);  color: #00c48c; }
+  .stat-icon.purple { background: rgba(168,85,247,0.15); color: #a855f7; }
+
+  .stat-info h2 {
+    font-size: 2.2rem; font-weight: 800; line-height: 1;
+    background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-info p { color: #64748b; font-size: 0.85rem; font-weight: 500; margin-top: 0.2rem; }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-size: 1rem; font-weight: 700; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .section-title::after {
+    content: ''; flex: 1;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ── Table ── */
+  .table-custom { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
+  .table-custom thead th {
+    color: #64748b; font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    padding: 0.6rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .table-custom tbody tr {
+    background: rgba(22,33,62,0.6);
+    border-radius: 10px;
+    transition: background 0.2s;
+  }
+  .table-custom tbody tr:hover { background: rgba(22,33,62,1); }
+  .table-custom tbody td {
+    padding: 0.85rem 1rem;
+    color: #e2e8f0; font-size: 0.9rem;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .table-custom tbody td:first-child { border-left: 2px solid transparent; border-radius: 10px 0 0 10px; }
+  .table-custom tbody td:last-child  { border-radius: 0 10px 10px 0; }
+
+  .badge-version {
+    background: rgba(78,143,255,0.18);
+    color: #4e8fff;
+    font-size: 0.78rem; font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid rgba(78,143,255,0.25);
+  }
+
+  .badge-date {
+    color: #64748b; font-size: 0.82rem;
+  }
+  .badge-user {
+    background: rgba(0,196,140,0.18);
+    color: #00c48c;
+    font-size: 0.78rem; font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid rgba(0,196,140,0.25);
+  }
+
+  .file-name-cell {
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .file-icon { color: #4e8fff; font-size: 1.1rem; }
+  .file-name  { font-weight: 600; color: #e2e8f0; }
+
+  /* ── Welcome header ── */
+  .welcome-header {
+    background: linear-gradient(135deg, #0f2040, #16213e);
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 16px;
+    padding: 1.6rem 2rem;
+    margin-bottom: 1.8rem;
+    display: flex; align-items: center; gap: 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  }
+  .welcome-avatar {
+    width: 52px; height: 52px; border-radius: 14px;
+    background: linear-gradient(135deg, #a855f7, #6b21a8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; color: #fff; flex-shrink: 0;
+  }
+  .welcome-text h2 { font-size: 1.3rem; font-weight: 800; color: #e2e8f0; }
+  .welcome-text p  { color: #64748b; font-size: 0.85rem; margin-top: 0.15rem; }
+
+  .empty-state {
+    text-align: center; padding: 2.5rem 1rem; color: #475569;
+  }
+  .empty-state i { font-size: 2.5rem; margin-bottom: 0.6rem; display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4" style="max-width:1280px;margin:auto;">
+
+  <!-- Welcome Header -->
+  <div class="welcome-header">
+    <div class="welcome-avatar"><i class="bi bi-shield-lock-fill"></i></div>
+    <div class="welcome-text">
+      <h2>Admin Dashboard</h2>
+      <p>Global system overview and monitoring analytics.</p>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-info">
+          <h2>{{ total_users }}</h2>
+          <p><i class="bi bi-dot"></i>Total Registered Users</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="bi bi-files"></i></div>
+        <div class="stat-info">
+          <h2>{{ total_files }}</h2>
+          <p><i class="bi bi-dot"></i>Total Files Across All Users</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="bi bi-hdd-network"></i></div>
+        <div class="stat-info">
+          <h2>{{ total_storage }}</h2>
+          <p><i class="bi bi-dot"></i>Global Storage Used</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- ── Global Recent Uploads ── -->
+    <div class="col-12">
+      <div class="section-title"><i class="bi bi-clock-history"></i> Recent Global Uploads</div>
+
+      {% if recent %}
+      <div style="overflow-x:auto;">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Uploaded By</th>
+              <th>Version</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in recent %}
+            <tr>
+              <td>
+                <div class="file-name-cell">
+                  <i class="bi bi-file-earmark-fill file-icon"></i>
+                  <span class="file-name">{{ f.original_name }}</span>
+                </div>
+              </td>
+              <td><span class="badge-user"><i class="bi bi-person-fill me-1"></i>{{ f.username }}</span></td>
+              <td><span class="badge-version">v{{ f.version }}</span></td>
+              <td><span class="badge-date"><i class="bi bi-calendar3 me-1"></i>{{ f.timestamp }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        No files uploaded across the system yet.
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Register — CloudBackup System{% endblock %}
+
+{% block extra_head %}
+<style>
+  body { background: radial-gradient(ellipse at 80% 40%, #0f3460 0%, #0d0d1a 60%); }
+
+  .auth-card {
+    background: linear-gradient(145deg, #16213e, #0f2040);
+    border: 1px solid rgba(0,196,140,0.15);
+    border-radius: 20px;
+    padding: 2.4rem 2.2rem;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+    animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .auth-logo {
+    text-align: center;
+    margin-bottom: 1.8rem;
+  }
+  .auth-logo .logo-icon {
+    font-size: 3rem;
+    background: linear-gradient(135deg, #00c48c, #4e8fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .auth-logo h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #00c48c, #4e8fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .auth-logo p { color: #64748b; font-size: 0.85rem; margin-top: 0.25rem; }
+
+  .form-label-custom {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+  }
+  .form-control-custom {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 0.7rem 1rem !important;
+    font-size: 0.95rem;
+    transition: all 0.25s ease;
+  }
+  .form-control-custom:focus {
+    background: rgba(0,196,140,0.06) !important;
+    border-color: #00c48c !important;
+    box-shadow: 0 0 0 3px rgba(0,196,140,0.15) !important;
+    outline: none !important;
+  }
+  .form-control-custom::placeholder { color: #475569 !important; }
+  .form-control-custom.is-valid-custom { border-color: #00c48c !important; }
+  .form-control-custom.is-invalid-custom { border-color: #ff4d6d !important; }
+
+  .input-icon-wrap { position: relative; }
+  .input-icon-wrap .bi {
+    position: absolute; left: 0.9rem; top: 50%;
+    transform: translateY(-50%);
+    color: #475569; font-size: 1rem; pointer-events: none;
+  }
+  .input-icon-wrap .form-control-custom { padding-left: 2.5rem !important; }
+
+  /* Password strength bar */
+  .strength-bar-wrap {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+  }
+  .strength-bar {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease, background 0.3s ease;
+    width: 0%;
+  }
+  .strength-label {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    color: #64748b;
+  }
+
+  .btn-register {
+    background: linear-gradient(135deg, #00c48c, #009e70);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    padding: 0.75rem;
+    width: 100%;
+    transition: all 0.25s ease;
+    margin-top: 0.5rem;
+  }
+  .btn-register:hover {
+    background: linear-gradient(135deg, #00d9a0, #00c48c);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,196,140,0.35);
+    color: #fff;
+  }
+  .btn-register:active { transform: translateY(0); }
+
+  .divider { border-top: 1px solid rgba(255,255,255,0.07); margin: 1.4rem 0; }
+  .auth-footer { text-align: center; color: #64748b; font-size: 0.88rem; }
+  .auth-footer a { color: #4e8fff; text-decoration: none; font-weight: 600; }
+  .auth-footer a:hover { color: #6aa3ff; text-decoration: underline; }
+
+  .field-hint { font-size: 0.78rem; color: #475569; margin-top: 0.3rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+<div style="width:100%;max-width:440px;margin:auto;">
+
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <i class="bi bi-shield-lock-fill logo-icon"></i>
+      <h1>Create Account</h1>
+      <p>Join CloudBackup System today</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('register') }}" id="registerForm" novalidate>
+
+      <!-- Username -->
+      <div class="mb-3">
+        <label class="form-label-custom" for="username">
+          <i class="bi bi-person me-1"></i>Username
+        </label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-person"></i>
+          <input type="text" id="username" name="username"
+            class="form-control form-control-custom"
+            placeholder="Choose a username (min 3 chars)"
+            autocomplete="username" required minlength="3"/>
+        </div>
+        <div class="field-hint">At least 3 characters</div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label class="form-label-custom" for="password">
+          <i class="bi bi-lock me-1"></i>Password
+        </label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-lock"></i>
+          <input type="password" id="password" name="password"
+            class="form-control form-control-custom"
+            placeholder="At least 6 characters"
+            autocomplete="new-password" required minlength="6"
+            oninput="checkStrength(this.value)"/>
+        </div>
+        <!-- Strength bar -->
+        <div class="strength-bar-wrap"><div class="strength-bar" id="strengthBar"></div></div>
+        <div class="strength-label" id="strengthLabel">Password strength</div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="mb-1">
+        <label class="form-label-custom" for="confirm_password">
+          <i class="bi bi-lock-fill me-1"></i>Confirm Password
+        </label>
+        <div class="input-icon-wrap">
+          <i class="bi bi-lock-fill"></i>
+          <input type="password" id="confirm_password" name="confirm_password"
+            class="form-control form-control-custom"
+            placeholder="Re-enter your password"
+            autocomplete="new-password" required
+            oninput="checkMatch()"/>
+        </div>
+        <div class="field-hint" id="matchHint">&nbsp;</div>
+      </div>
+
+      <button type="submit" id="registerBtn" class="btn btn-register mt-3">
+        <i class="bi bi-person-plus me-2"></i>Create Account
+      </button>
+    </form>
+
+    <div class="divider"></div>
+    <div class="auth-footer">
+      Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
+    </div>
+  </div>
+
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function checkStrength(val) {
+    const bar   = document.getElementById('strengthBar');
+    const label = document.getElementById('strengthLabel');
+    let score = 0;
+    if (val.length >= 6)  score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = [
+      { pct: '0%',   color: '',          text: 'Password strength' },
+      { pct: '25%',  color: '#ff4d6d',   text: 'Weak' },
+      { pct: '50%',  color: '#f59e0b',   text: 'Fair' },
+      { pct: '75%',  color: '#4e8fff',   text: 'Good' },
+      { pct: '100%', color: '#00c48c',   text: 'Strong ✓' },
+    ];
+    const l = levels[Math.min(score, 4)];
+    bar.style.width      = l.pct;
+    bar.style.background = l.color;
+    label.textContent    = l.text;
+    label.style.color    = l.color || '#64748b';
+  }
+
+  function checkMatch() {
+    const pw  = document.getElementById('password').value;
+    const cpw = document.getElementById('confirm_password').value;
+    const el  = document.getElementById('matchHint');
+    if (!cpw) { el.textContent = '\u00a0'; el.style.color = '#64748b'; return; }
+    if (pw === cpw) { el.textContent = '✓ Passwords match'; el.style.color = '#00c48c'; }
+    else            { el.textContent = '✗ Passwords do not match'; el.style.color = '#ff4d6d'; }
+  }
+
+  document.getElementById('registerForm').addEventListener('submit', function (e) {
+    const pw  = document.getElementById('password').value;
+    const cpw = document.getElementById('confirm_password').value;
+    if (pw !== cpw) { e.preventDefault(); return; }
+    const btn = document.getElementById('registerBtn');
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating…';
+    btn.disabled  = true;
+  });
+</script>
+{% endblock %}

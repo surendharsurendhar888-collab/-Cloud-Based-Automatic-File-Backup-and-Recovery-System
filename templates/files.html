@@ -1,0 +1,336 @@
+{% extends "base.html" %}
+
+{% block title %}My Files — CloudBackup System{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Search bar ── */
+  .search-wrap { position: relative; }
+  .search-wrap .bi {
+    position: absolute; left: 0.9rem; top: 50%;
+    transform: translateY(-50%); color: #475569;
+  }
+  .search-input {
+    background: rgba(255,255,255,0.05) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 0.65rem 1rem 0.65rem 2.5rem !important;
+    font-size: 0.92rem;
+    width: 100%;
+    transition: all 0.25s ease;
+  }
+  .search-input:focus {
+    border-color: #4e8fff !important;
+    box-shadow: 0 0 0 3px rgba(78,143,255,0.15) !important;
+    outline: none !important;
+    background: rgba(78,143,255,0.06) !important;
+  }
+  .search-input::placeholder { color: #475569 !important; }
+
+  /* ── Page header ── */
+  .page-header {
+    background: linear-gradient(135deg, #16213e, #0f2040);
+    border: 1px solid rgba(78,143,255,0.1);
+    border-radius: 16px;
+    padding: 1.4rem 1.8rem;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .page-header h1 {
+    font-size: 1.3rem; font-weight: 800; color: #e2e8f0;
+    margin: 0;
+  }
+  .page-header p { color: #64748b; font-size: 0.85rem; margin: 0.15rem 0 0; }
+
+  /* ── Files table wrapper ── */
+  .files-table-wrap {
+    background: linear-gradient(145deg, #16213e, #0f2040);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  }
+
+  .files-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .files-table thead th {
+    background: rgba(15,52,96,0.6);
+    color: #64748b;
+    font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    white-space: nowrap;
+  }
+  .files-table tbody tr.file-row {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+  }
+  .files-table tbody tr.file-row:hover { background: rgba(78,143,255,0.04); }
+  .files-table tbody td {
+    padding: 0.9rem 1.1rem;
+    color: #e2e8f0; font-size: 0.9rem;
+    vertical-align: middle;
+  }
+
+  .file-name-cell { display: flex; align-items: center; gap: 0.65rem; }
+  .file-icon-bg {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: rgba(78,143,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    color: #4e8fff; font-size: 1rem; flex-shrink: 0;
+  }
+  .file-name-text { font-weight: 600; color: #e2e8f0; }
+  .file-name-text small { color: #64748b; font-size: 0.78rem; display: block; margin-top: 1px; }
+
+  .badge-version {
+    background: rgba(78,143,255,0.18);
+    color: #4e8fff;
+    font-size: 0.78rem; font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    border: 1px solid rgba(78,143,255,0.25);
+  }
+  .badge-count {
+    background: rgba(0,196,140,0.15);
+    color: #00c48c;
+    font-size: 0.78rem; font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    border: 1px solid rgba(0,196,140,0.2);
+  }
+
+  /* ── Action buttons ── */
+  .btn-action {
+    font-size: 0.78rem; font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn-dl    { background:rgba(0,196,140,0.15); border-color:rgba(0,196,140,0.3); color:#00c48c; }
+  .btn-dl:hover { background:rgba(0,196,140,0.28); color:#00c48c; transform:translateY(-1px); }
+  .btn-expand{ background:rgba(78,143,255,0.15); border-color:rgba(78,143,255,0.3); color:#4e8fff; }
+  .btn-expand:hover{ background:rgba(78,143,255,0.28); color:#4e8fff; transform:translateY(-1px); }
+  .btn-restore{ background:rgba(139,92,246,0.15); border-color:rgba(139,92,246,0.3); color:#a78bfa; }
+  .btn-restore:hover{ background:rgba(139,92,246,0.28); color:#a78bfa; transform:translateY(-1px); }
+  .btn-del   { background:rgba(255,77,109,0.15); border-color:rgba(255,77,109,0.3); color:#ff4d6d; }
+  .btn-del:hover{ background:rgba(255,77,109,0.28); color:#ff4d6d; transform:translateY(-1px); }
+
+  /* ── Version history sub-table ── */
+  .versions-row td { padding: 0 !important; border-top: none !important; }
+  .versions-panel {
+    background: rgba(10,17,40,0.6);
+    border-top: 1px solid rgba(78,143,255,0.12);
+    padding: 1rem 1.5rem 1.2rem;
+    animation: slideDown 0.25s ease;
+  }
+  @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
+  .versions-panel .vtitle {
+    font-size: 0.78rem; font-weight: 700; color: #64748b;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    margin-bottom: 0.7rem;
+  }
+  .version-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9px; margin-bottom: 4px;
+    background: rgba(22,33,62,0.7);
+    flex-wrap: wrap;
+    transition: background 0.2s;
+  }
+  .version-item:hover { background: rgba(22,33,62,1); }
+  .version-item .vnum {
+    min-width: 52px;
+    font-weight: 700; font-size: 0.85rem; color: #4e8fff;
+  }
+  .version-item .vdate { color: #64748b; font-size: 0.8rem; flex: 1; }
+  .version-item .vactions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center; padding: 3rem 1rem; color: #475569;
+  }
+  .empty-state i { font-size: 3rem; display: block; margin-bottom: 0.8rem; }
+
+  .date-text { color: #64748b; font-size: 0.85rem; }
+
+  /* ── File row hidden / show ── */
+  .versions-row { display: none; }
+  .versions-row.show { display: table-row; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-3 px-md-4" style="max-width:1280px;margin:auto;">
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div>
+      <h1><i class="bi bi-folder2-open me-2 text-primary"></i>My Files</h1>
+      <p>All your backed-up files with complete version history</p>
+    </div>
+    <div class="ms-auto search-wrap" style="min-width:260px;">
+      <i class="bi bi-search"></i>
+      <input type="text" id="searchInput" class="form-control search-input"
+             placeholder="Search files…" oninput="filterFiles()"/>
+    </div>
+  </div>
+
+  {% if summary %}
+  <div class="files-table-wrap">
+    <div style="overflow-x:auto;">
+      <table class="files-table" id="filesTable">
+        <thead>
+          <tr>
+            <th>File Name</th>
+            <th>Latest Ver.</th>
+            <th>Last Modified</th>
+            <th>Total Versions</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="filesBody">
+          {% for row in summary %}
+          {% set fname = row.original_name %}
+          {% set versions = versions_map.get(fname, []) %}
+          {% set latest_v = versions[0] if versions else None %}
+
+          <!-- ── Summary row ── -->
+          <tr class="file-row" data-name="{{ fname|lower }}">
+            <td>
+              <div class="file-name-cell">
+                <div class="file-icon-bg">
+                  <i class="bi bi-file-earmark-fill"></i>
+                </div>
+                <div class="file-name-text">
+                  {{ fname }}
+                  <small>{{ versions|length }} version{{ 's' if versions|length > 1 else '' }}</small>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge-version">v{{ row.latest_version }}</span></td>
+            <td><span class="date-text"><i class="bi bi-calendar3 me-1"></i>{{ row.last_modified }}</span></td>
+            <td><span class="badge-count">{{ row.total_versions }}</span></td>
+            <td>
+              <div class="d-flex gap-2 flex-wrap">
+                {% if latest_v %}
+                <a href="{{ url_for('download', file_id=latest_v.id) }}"
+                   class="btn btn-action btn-dl" title="Download latest version">
+                  <i class="bi bi-cloud-download me-1"></i>Download
+                </a>
+                {% endif %}
+                <button class="btn btn-action btn-expand"
+                        onclick="toggleVersions('versions-{{ loop.index }}')"
+                        id="btn-{{ loop.index }}">
+                  <i class="bi bi-layers me-1"></i>Versions
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- ── Version history row (hidden by default) ── -->
+          <tr class="versions-row" id="versions-{{ loop.index }}">
+            <td colspan="5">
+              <div class="versions-panel">
+                <div class="vtitle">
+                  <i class="bi bi-clock-history me-1"></i>
+                  Version History for "{{ fname }}"
+                </div>
+
+                {% for v in versions %}
+                <div class="version-item">
+                  <span class="vnum">v{{ v.version }}</span>
+                  <span class="vdate">
+                    <i class="bi bi-calendar3 me-1"></i>{{ v.timestamp }}
+                  </span>
+                  <div class="vactions">
+                    <!-- Download -->
+                    <a href="{{ url_for('download', file_id=v.id) }}"
+                       class="btn btn-action btn-dl">
+                      <i class="bi bi-cloud-download me-1"></i>Download
+                    </a>
+                    <!-- Restore (only if not the latest version) -->
+                    {% if v.version != row.latest_version %}
+                    <a href="{{ url_for('restore', file_id=v.id) }}"
+                       class="btn btn-action btn-restore"
+                       onclick="return confirm('Restore version {{ v.version }} of \'{{ fname }}\' as a new version?')">
+                      <i class="bi bi-arrow-counterclockwise me-1"></i>Restore
+                    </a>
+                    {% endif %}
+                    <!-- Delete -->
+                    <form method="POST" action="{{ url_for('delete', file_id=v.id) }}"
+                          style="display:inline;"
+                          onsubmit="return confirm('Delete version {{ v.version }} of \'{{ fname }}\'? This cannot be undone.')">
+                      <button type="submit" class="btn btn-action btn-del">
+                        <i class="bi bi-trash3 me-1"></i>Delete
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                {% endfor %}
+
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="files-table-wrap">
+    <div class="empty-state">
+      <i class="bi bi-inbox text-primary"></i>
+      <h3 style="color:#94a3b8;font-size:1.1rem;font-weight:700;">No files yet</h3>
+      <p style="color:#64748b;font-size:0.9rem;">Go to the Dashboard to upload your first file.</p>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-action btn-dl mt-2">
+        <i class="bi bi-cloud-upload me-1"></i>Upload a File
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  /* ── Toggle version history panel ── */
+  function toggleVersions(id) {
+    const panel = document.getElementById(id);
+    panel.classList.toggle('show');
+    // Toggle button icon
+    const idx = id.split('-')[1];
+    const btn = document.getElementById('btn-' + idx);
+    if (panel.classList.contains('show')) {
+      btn.innerHTML = '<i class="bi bi-chevron-up me-1"></i>Hide';
+    } else {
+      btn.innerHTML = '<i class="bi bi-layers me-1"></i>Versions';
+    }
+  }
+
+  /* ── Search / filter ── */
+  function filterFiles() {
+    const q    = document.getElementById('searchInput').value.toLowerCase().trim();
+    const rows = document.querySelectorAll('#filesBody tr.file-row');
+    rows.forEach(row => {
+      const name = row.getAttribute('data-name') || '';
+      const show = !q || name.includes(q);
+      row.style.display = show ? '' : 'none';
+      // Also hide/show corresponding version panel
+      const nextRow = row.nextElementSibling;
+      if (nextRow && nextRow.classList.contains('versions-row')) {
+        if (!show) nextRow.classList.remove('show');
+        nextRow.style.display = show ? '' : 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}

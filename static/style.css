@@ -1,0 +1,56 @@
+/*
+ * CloudBackup System — style.css
+ * Global styles that complement Bootstrap 5 dark theme.
+ * (Most design tokens live inline in base.html / templates)
+ */
+
+/* ── Smooth scroll & selection color ── */
+html { scroll-behavior: smooth; }
+::selection { background: rgba(78,143,255,0.35); color: #e2e8f0; }
+
+/* ── Body background ── */
+body {
+  background-color: #1a1a2e;
+  color: #e2e8f0;
+}
+
+/* ── Remove Bootstrap focus glow on buttons ── */
+.btn:focus, .btn:active:focus { box-shadow: none !important; }
+
+/* ── Responsive table on small screens ── */
+@media (max-width: 576px) {
+  .files-table thead { display: none; }
+  .files-table tbody tr { display: block; margin-bottom: 1rem; border-radius: 12px; }
+  .files-table tbody td { display: flex; justify-content: space-between; align-items: center; }
+  .files-table tbody td::before {
+    content: attr(data-label);
+    font-size: 0.75rem; font-weight: 700;
+    color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;
+    flex-shrink: 0; margin-right: 1rem;
+  }
+}
+
+/* ── Animated page fade-in ── */
+.main-wrapper {
+  animation: pageFade 0.35s ease-out;
+}
+@keyframes pageFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Tooltip dark override ── */
+.tooltip-inner {
+  background: #0f3460;
+  font-size: 0.8rem;
+  border-radius: 6px;
+}
+
+/* ── Spinner color ── */
+.spinner-border { color: #4e8fff; }
+
+/* ── Scrollbar (Webkit) ── */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: #0d0d1a; }
+::-webkit-scrollbar-thumb  { background: #0f3460; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4e8fff; }

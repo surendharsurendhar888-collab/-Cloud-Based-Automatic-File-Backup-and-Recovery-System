@@ -1,0 +1,401 @@
+/* ============================================================
+   CloudVault — Custom Stylesheet
+   Color System:
+     --cv-navy      : Deep navy background
+     --cv-surface   : Card surface
+     --cv-border    : Subtle border
+     --cv-accent    : Green accent
+     --cv-primary   : Blue primary
+   ============================================================ */
+
+/* ── Google Font already loaded via <link> in base.html ─── */
+
+/* ── CSS Variables ────────────────────────────────────────── */
+:root {
+  --cv-navy:          #0d1b2a;
+  --cv-navy-mid:      #122337;
+  --cv-navy-light:    #1a3148;
+  --cv-surface:       #ffffff;
+  --cv-surface-dark:  #f4f6fb;
+  --cv-border:        #e2e8f0;
+  --cv-accent:        #22c55e;
+  --cv-accent-dark:   #16a34a;
+  --cv-primary:       #3b82f6;
+  --cv-primary-dark:  #2563eb;
+  --cv-warning:       #f59e0b;
+  --cv-danger:        #ef4444;
+  --cv-text:          #1e293b;
+  --cv-muted:         #64748b;
+  --cv-radius:        12px;
+  --cv-radius-sm:     8px;
+  --cv-shadow:        0 4px 24px rgba(15,30,55,.12);
+  --cv-shadow-lg:     0 8px 40px rgba(15,30,55,.18);
+  --cv-transition:    all .25s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Reset & Base ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--cv-surface-dark);
+  color: var(--cv-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.cv-navbar {
+  background: linear-gradient(135deg, var(--cv-navy) 0%, var(--cv-navy-mid) 100%);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  box-shadow: 0 2px 16px rgba(0,0,0,.25);
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+}
+
+.cv-navbar .navbar-brand {
+  font-size: 1.25rem;
+  letter-spacing: -.5px;
+  color: #fff !important;
+}
+
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: linear-gradient(135deg, var(--cv-primary), var(--cv-accent));
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.cv-navbar .nav-link {
+  color: rgba(255,255,255,.65) !important;
+  font-size: .875rem;
+  font-weight: 500;
+  padding: .45rem .9rem !important;
+  border-radius: var(--cv-radius-sm);
+  transition: var(--cv-transition);
+}
+.cv-navbar .nav-link:hover,
+.cv-navbar .nav-link.active {
+  color: #fff !important;
+  background: rgba(255,255,255,.1);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.cv-btn-primary {
+  background: linear-gradient(135deg, var(--cv-primary), var(--cv-primary-dark));
+  color: #fff;
+  border: none;
+  border-radius: var(--cv-radius-sm);
+  font-weight: 600;
+  transition: var(--cv-transition);
+  box-shadow: 0 2px 8px rgba(59,130,246,.35);
+}
+.cv-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(59,130,246,.45);
+  color: #fff;
+  background: linear-gradient(135deg, var(--cv-primary-dark), #1d4ed8);
+}
+.cv-btn-primary:active { transform: translateY(0); }
+
+.cv-btn-accent {
+  background: linear-gradient(135deg, var(--cv-accent), var(--cv-accent-dark));
+  color: #fff;
+  border: none;
+  border-radius: var(--cv-radius-sm);
+  font-weight: 600;
+  transition: var(--cv-transition);
+  box-shadow: 0 2px 8px rgba(34,197,94,.35);
+}
+.cv-btn-accent:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(34,197,94,.45);
+  color: #fff;
+}
+
+/* Extra-small btn (used in version table) */
+.btn-xs {
+  padding: .15rem .45rem;
+  font-size: .75rem;
+  border-radius: 6px;
+}
+
+/* ============================================================
+   AUTH PAGES
+   ============================================================ */
+.auth-wrapper {
+  background: linear-gradient(135deg, var(--cv-navy) 0%, #0f2849 60%, #0d2035 100%);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--cv-radius) !important;
+  overflow: hidden;
+  box-shadow: var(--cv-shadow-lg) !important;
+  animation: slideUp .4s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.auth-card-header {
+  background: linear-gradient(135deg, var(--cv-primary) 0%, #1d4ed8 100%);
+}
+
+.auth-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: rgba(255,255,255,.15);
+  border-radius: 14px;
+  font-size: 1.75rem;
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+
+/* ── Input styles ─────────────────────────────────────── */
+.cv-input {
+  border-color: var(--cv-border);
+  border-radius: 0 var(--cv-radius-sm) var(--cv-radius-sm) 0 !important;
+  transition: var(--cv-transition);
+  font-size: .9rem;
+}
+.cv-input:focus {
+  border-color: var(--cv-primary);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+.cv-input-icon {
+  background: var(--cv-surface-dark);
+  border-color: var(--cv-border);
+  border-radius: var(--cv-radius-sm) 0 0 var(--cv-radius-sm) !important;
+  color: var(--cv-muted);
+}
+.cv-eye-btn {
+  border-color: var(--cv-border);
+  border-radius: 0 var(--cv-radius-sm) var(--cv-radius-sm) 0 !important;
+  color: var(--cv-muted);
+}
+.cv-eye-btn:hover { color: var(--cv-primary); }
+
+/* ── Link ──────────────────────────────────────────────────── */
+.cv-link {
+  color: var(--cv-primary);
+  text-decoration: none;
+  transition: var(--cv-transition);
+}
+.cv-link:hover { color: var(--cv-primary-dark); text-decoration: underline; }
+
+/* ── Accent text ───────────────────────────────────────────── */
+.cv-accent { color: var(--cv-accent); }
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+.cv-welcome-banner {
+  background: linear-gradient(135deg, var(--cv-navy) 0%, var(--cv-navy-light) 100%);
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow: var(--cv-shadow);
+}
+
+/* ── Stat Cards ──────────────────────────────────────────── */
+.cv-stat-card {
+  border-radius: var(--cv-radius) !important;
+  transition: var(--cv-transition);
+}
+.cv-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--cv-shadow-lg) !important;
+}
+
+.cv-stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--cv-radius);
+  flex-shrink: 0;
+}
+.bg-primary-soft { background: rgba(59,130,246,.12); }
+.bg-success-soft { background: rgba(34,197,94,.12); }
+.bg-warning-soft { background: rgba(245,158,11,.12); }
+
+.ls-1 { letter-spacing: .5px; }
+
+/* ── Card Header ─────────────────────────────────────────── */
+.cv-card-header {
+  background: #fff;
+  border-bottom: 1px solid var(--cv-border);
+  padding: 1rem 1.25rem;
+  border-radius: var(--cv-radius) var(--cv-radius) 0 0 !important;
+}
+
+/* ── Drop Zone ───────────────────────────────────────────── */
+.cv-dropzone {
+  border: 2px dashed var(--cv-border);
+  border-radius: var(--cv-radius);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--cv-transition);
+  background: var(--cv-surface-dark);
+  position: relative;
+}
+.cv-dropzone:hover,
+.cv-dropzone-active {
+  border-color: var(--cv-primary);
+  background: rgba(59,130,246,.05);
+}
+
+.cv-dropzone-icon {
+  font-size: 3rem;
+  color: var(--cv-primary);
+  opacity: .6;
+  transition: var(--cv-transition);
+}
+.cv-dropzone:hover .cv-dropzone-icon,
+.cv-dropzone-active .cv-dropzone-icon {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.cv-file-info-box {
+  background: rgba(59,130,246,.08);
+  border: 1px solid rgba(59,130,246,.2);
+}
+
+.cv-progress { background: linear-gradient(90deg, var(--cv-primary), var(--cv-accent)); }
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.cv-table {
+  font-size: .875rem;
+}
+.cv-table thead th {
+  background: var(--cv-surface-dark);
+  font-weight: 600;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--cv-muted);
+  border-bottom: 1px solid var(--cv-border);
+  padding: .85rem 1rem;
+}
+.cv-table tbody td {
+  padding: .85rem 1rem;
+  border-bottom: 1px solid var(--cv-border);
+  vertical-align: middle;
+}
+.cv-table tbody tr:last-child td { border-bottom: none; }
+.cv-table tbody tr { transition: background .15s; }
+.cv-table tbody tr:hover { background: rgba(59,130,246,.04); }
+
+/* ── File icon in table ─────────────────────────────────── */
+.cv-file-type-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+/* ── Version badge ──────────────────────────────────────── */
+.cv-badge-version {
+  background: linear-gradient(135deg, var(--cv-primary), var(--cv-primary-dark));
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 600;
+  padding: .3em .65em;
+  border-radius: 99px;
+}
+
+/* ── Version panel ──────────────────────────────────────── */
+.cv-version-panel {
+  background: linear-gradient(to bottom, rgba(59,130,246,.04), transparent);
+  border-top: 2px solid rgba(59,130,246,.15);
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.cv-version-table thead th {
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--cv-muted);
+}
+
+.cv-expand-icon {
+  transition: transform .2s;
+}
+
+/* ── Action buttons ─────────────────────────────────────── */
+.cv-action-btn {
+  font-size: .8rem;
+  padding: .3rem .65rem;
+  border-radius: 6px;
+  transition: var(--cv-transition);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.cv-modal {
+  border-radius: var(--cv-radius) !important;
+  border: none;
+  box-shadow: var(--cv-shadow-lg);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.cv-footer {
+  background: #fff;
+  border-top: 1px solid var(--cv-border);
+  margin-top: auto;
+}
+
+/* ============================================================
+   FLASH MESSAGES
+   ============================================================ */
+#flashContainer .alert {
+  border-radius: var(--cv-radius-sm);
+  border: none;
+  font-size: .875rem;
+  font-weight: 500;
+}
+
+/* ============================================================
+   UTILITY — Responsive tweaks
+   ============================================================ */
+@media (max-width: 576px) {
+  .auth-card { max-width: 100%; }
+  .cv-welcome-banner h2 { font-size: 1.25rem; }
+  .cv-stat-icon { width: 50px; height: 50px; }
+}
