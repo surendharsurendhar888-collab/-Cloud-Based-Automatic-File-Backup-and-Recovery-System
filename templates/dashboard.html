@@ -167,6 +167,35 @@
   }
   .date-text { color: var(--text-muted); font-size: 0.85rem; }
 
+  .form-control-custom {
+    background: #0f172a !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    color: #e2e8f0 !important;
+    border-radius: 10px !important;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .form-control-custom:focus {
+    border-color: #4e8fff !important;
+    box-shadow: 0 0 0 3px rgba(78,143,255,0.15) !important;
+    outline: none !important;
+  }
+  /* Force option elements to inherit dark styling */
+  .form-control-custom option,
+  select option {
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+  .folder-select-label {
+    color: #93c5fd !important;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+
   /* ── Floating Chatbot Sidebar ── */
   #aiSidebar {
     position: fixed;
@@ -359,6 +388,30 @@
     color: var(--primary);
     border-color: var(--primary);
   }
+
+  /* ── Responsive Dashboard ── */
+  @media (max-width: 768px) {
+    #aiSidebar {
+      top: 0;
+      height: 100vh;
+      width: 100%;
+      right: -100%;
+      border-radius: 0;
+      z-index: 1060;
+    }
+    .stat-card { 
+      flex-direction: column; 
+      text-align: center; 
+      gap: 0.75rem; 
+      padding: 1.5rem 1rem; 
+    }
+    .stat-icon { width: 50px; height: 50px; font-size: 1.5rem; }
+    .stat-value { font-size: 1.75rem; }
+    .upload-box { min-height: 200px; padding: 2rem 1rem; }
+    .table-custom th, .table-custom td { padding: 0.75rem 1rem; font-size: 0.85rem; }
+    #aiToggleBtn { bottom: 20px; right: 20px; width: 50px; height: 50px; }
+    #aiToggleBtn i { font-size: 1.25rem; }
+  }
 </style>
 {% endblock %}
 
@@ -414,6 +467,15 @@
         </div>
         <div class="mt-3 text-muted" style="font-size: 0.75rem;">
           All file types supported • Max 50 MB
+        </div>
+        <div class="mt-3 w-100 px-3">
+          <label class="folder-select-label"><i class="bi bi-folder2 me-1"></i>Select Destination Folder</label>
+          <select id="uploadFolderSelect" class="form-select form-control-custom w-100">
+            <option value="None" style="background:#0f172a;color:#e2e8f0;">📁 Root Directory</option>
+            {% for folder in folders %}
+            <option value="{{ folder.id }}" style="background:#0f172a;color:#e2e8f0;">📂 {{ folder.name }}</option>
+            {% endfor %}
+          </select>
         </div>
         <input type="file" id="fileInput" class="d-none">
       </div>
@@ -561,6 +623,8 @@
 
     let formData = new FormData();
     formData.append('file', file);
+    const folderId = document.getElementById('uploadFolderSelect').value;
+    formData.append('folder_id', folderId);
 
     let xhr = new XMLHttpRequest();
     xhr.open('POST', '{{ url_for("upload") }}', true);

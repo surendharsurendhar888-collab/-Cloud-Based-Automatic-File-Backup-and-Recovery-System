@@ -127,8 +127,40 @@
   .auth-footer a:hover { color: #6aa3ff; text-decoration: underline; }
 
   .divider {
-    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    text-align: center;
     margin: 1.4rem 0;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .divider:not(:empty)::before { margin-right: .75em; }
+  .divider:not(:empty)::after { margin-left: .75em; }
+
+  .btn-google {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e2e8f0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    padding: 0.75rem;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn-google:hover {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-color: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
   }
 </style>
 {% endblock %}
@@ -190,7 +222,11 @@
       </button>
     </form>
 
-    <div class="divider"></div>
+    <div class="divider">OR</div>
+
+    <a href="{{ url_for('login_google') }}" class="btn btn-google w-100">
+      <i class="bi bi-google me-2 text-danger"></i>Continue with Google
+    </a>
 
     <div class="auth-footer">
       Don't have an account? <a href="{{ url_for('register') }}">Create one now</a>

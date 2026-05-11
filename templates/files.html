@@ -163,11 +163,123 @@
   /* ── File row hidden / show ── */
   .versions-row { display: none; }
   .versions-row.show { display: table-row; }
+
+  /* ── Breadcrumbs ── */
+  .breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    color: #64748b;
+  }
+  .breadcrumb-item-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .breadcrumb-item-custom a {
+    color: #4e8fff;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .breadcrumb-item-custom a:hover {
+    color: #8B5CF6;
+  }
+  .breadcrumb-separator {
+    color: #475569;
+  }
+
+  /* ── Folder Row ── */
+  .folder-row {
+    background: rgba(78, 143, 255, 0.04);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+  }
+  .folder-row:hover { background: rgba(78, 143, 255, 0.08); }
+  .folder-icon-bg {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: rgba(139, 92, 246, 0.15);
+    display: flex; align-items: center; justify-content: center;
+    color: #a78bfa; font-size: 1.1rem; flex-shrink: 0;
+  }
+  .folder-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  /* ── Modal styling ── */
+  .modal-content-custom {
+    background: #16213e;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    color: #e2e8f0;
+  }
+  .modal-header-custom {
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 1.25rem 1.5rem;
+  }
+  .modal-body-custom { padding: 1.5rem; }
+  .modal-footer-custom {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 1.25rem 1.5rem;
+  }
+  .form-control-custom {
+    background: rgba(0,0,0,0.2) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #e2e8f0 !important;
+    border-radius: 10px !important;
+  }
+  .form-control-custom:focus {
+    border-color: #4e8fff !important;
+    box-shadow: 0 0 0 3px rgba(78,143,255,0.15) !important;
+  }
+
+  /* ── Responsive Mobile Table ── */
+  @media (max-width: 768px) {
+    .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1rem; }
+    .search-wrap { width: 100%; min-width: auto !important; }
+    
+    .files-table thead { display: none; }
+    .files-table tbody tr.file-row { display: flex; flex-direction: column; padding: 1rem; gap: 0.5rem; position: relative; }
+    .files-table tbody td { padding: 0.25rem 0; border: none; display: flex; align-items: center; gap: 0.5rem; }
+    .files-table tbody tr.file-row td:first-child { padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; justify-content: flex-start; }
+    
+    .files-table tbody tr.file-row td:nth-child(2)::before { content: "LATEST:"; color: #64748b; font-size: 0.75rem; font-weight: 700; width: 80px; }
+    .files-table tbody tr.file-row td:nth-child(3)::before { content: "MODIFIED:"; color: #64748b; font-size: 0.75rem; font-weight: 700; width: 80px; }
+    .files-table tbody tr.file-row td:nth-child(4)::before { content: "VERSIONS:"; color: #64748b; font-size: 0.75rem; font-weight: 700; width: 80px; }
+    
+    .files-table tbody tr.file-row td:last-child { margin-top: 0.5rem; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.06); width: 100%; justify-content: flex-start; }
+    
+    .versions-panel { padding: 1rem; }
+    .version-item { flex-direction: column; align-items: flex-start; padding: 0.75rem; gap: 0.5rem; }
+    .version-item .vdate { width: 100%; margin-bottom: 0.25rem; }
+    .version-item .vactions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .version-item .vactions .btn { width: 100%; display: flex; justify-content: center; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container-fluid px-3 px-md-4" style="max-width:1280px;margin:auto;">
+
+  <!-- Breadcrumb Navigation -->
+  <div class="breadcrumb-nav">
+    <div class="breadcrumb-item-custom">
+      <a href="{{ url_for('files') }}"><i class="bi bi-house-door me-1"></i>Home</a>
+    </div>
+    {% for crumb in breadcrumbs %}
+    <span class="breadcrumb-separator"><i class="bi bi-chevron-right small"></i></span>
+    <div class="breadcrumb-item-custom">
+      <a href="{{ url_for('files', folder_id=crumb.id) }}">{{ crumb.name }}</a>
+    </div>
+    {% endfor %}
+  </div>
 
   <!-- Page Header -->
   <div class="page-header">
@@ -175,27 +287,65 @@
       <h1><i class="bi bi-folder2-open me-2 text-primary"></i>My Files</h1>
       <p>All your backed-up files with complete version history</p>
     </div>
-    <div class="ms-auto search-wrap" style="min-width:260px;">
-      <i class="bi bi-search"></i>
-      <input type="text" id="searchInput" class="form-control search-input"
-             placeholder="Search files…" oninput="filterFiles()"/>
+    <div class="ms-auto d-flex gap-3 align-items-center flex-wrap">
+      <button class="btn btn-action btn-expand" data-bs-toggle="modal" data-bs-target="#newFolderModal">
+        <i class="bi bi-folder-plus me-1"></i>New Folder
+      </button>
+      <div class="search-wrap" style="min-width:260px;">
+        <i class="bi bi-search"></i>
+        <input type="text" id="searchInput" class="form-control search-input"
+               placeholder="Search files…" oninput="filterFiles()"/>
+      </div>
     </div>
   </div>
 
-  {% if summary %}
   <div class="files-table-wrap">
     <div style="overflow-x:auto;">
       <table class="files-table" id="filesTable">
         <thead>
           <tr>
-            <th>File Name</th>
-            <th>Latest Ver.</th>
+            <th>Name</th>
+            <th>Type / Latest Ver.</th>
             <th>Last Modified</th>
-            <th>Total Versions</th>
+            <th>Info / Versions</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="filesBody">
+          <!-- Folders first -->
+          {% for folder in subfolders %}
+          <tr class="folder-row" data-name="{{ folder.name|lower }}">
+            <td>
+              <a href="{{ url_for('files', folder_id=folder.id) }}" class="folder-link">
+                <div class="folder-icon-bg">
+                  <i class="bi bi-folder-fill"></i>
+                </div>
+                <div class="file-name-text">
+                  {{ folder.name }}
+                </div>
+              </a>
+            </td>
+            <td><span class="badge-version" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; border-color: rgba(139, 92, 246, 0.25);">Folder</span></td>
+            <td><span class="date-text"><i class="bi bi-calendar3 me-1"></i>{{ folder.created_at }}</span></td>
+            <td>-</td>
+            <td>
+              <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-action btn-expand" title="Rename Folder"
+                        data-folder-id="{{ folder.id }}" data-folder-name="{{ folder.name }}"
+                        onclick="openRenameModal(this.dataset.folderId, this.dataset.folderName)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <form action="{{ url_for('delete_folder', folder_id=folder.id) }}" method="POST" onsubmit="return confirm('Delete this folder? (Only empty folders can be deleted)')">
+                  <button type="submit" class="btn btn-action btn-del" title="Delete Folder">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+
+          {% if summary %}
           {% for row in summary %}
           {% set fname = row.original_name %}
           {% set versions = versions_map.get(fname, []) %}
@@ -255,22 +405,24 @@
                        class="btn btn-action btn-dl">
                       <i class="bi bi-cloud-download me-1"></i>Download
                     </a>
+
                     <!-- Restore (only if not the latest version) -->
                     {% if v.version != row.latest_version %}
-                    <a href="{{ url_for('restore', file_id=v.id) }}"
+                    <a href="javascript:void(0)" 
                        class="btn btn-action btn-restore"
-                       onclick="return confirm('Restore version {{ v.version }} of \'{{ fname }}\' as a new version?')">
+                       onclick="if(confirm('Restore version {{ v.version }} of this file?')) document.getElementById('restore-form-{{ v.id }}').submit();">
                       <i class="bi bi-arrow-counterclockwise me-1"></i>Restore
                     </a>
+                    <form id="restore-form-{{ v.id }}" method="POST" action="{{ url_for('restore', file_id=v.id) }}" style="display:none;"></form>
                     {% endif %}
+
                     <!-- Delete -->
-                    <form method="POST" action="{{ url_for('delete', file_id=v.id) }}"
-                          style="display:inline;"
-                          onsubmit="return confirm('Delete version {{ v.version }} of \'{{ fname }}\'? This cannot be undone.')">
-                      <button type="submit" class="btn btn-action btn-del">
-                        <i class="bi bi-trash3 me-1"></i>Delete
-                      </button>
-                    </form>
+                    <a href="javascript:void(0)" 
+                       class="btn btn-action btn-del"
+                       onclick="if(confirm('Delete version {{ v.version }}? This cannot be undone.')) document.getElementById('delete-form-{{ v.id }}').submit();">
+                      <i class="bi bi-trash3 me-1"></i>Delete
+                    </a>
+                    <form id="delete-form-{{ v.id }}" method="POST" action="{{ url_for('delete', file_id=v.id) }}" style="display:none;"></form>
                   </div>
                 </div>
                 {% endfor %}
@@ -279,23 +431,75 @@
             </td>
           </tr>
           {% endfor %}
+          {% endif %}
         </tbody>
       </table>
     </div>
   </div>
 
-  {% else %}
-  <div class="files-table-wrap">
+  {% if not summary and not subfolders %}
+  <div class="files-table-wrap mt-4">
     <div class="empty-state">
       <i class="bi bi-inbox text-primary"></i>
-      <h3 style="color:#94a3b8;font-size:1.1rem;font-weight:700;">No files yet</h3>
-      <p style="color:#64748b;font-size:0.9rem;">Go to the Dashboard to upload your first file.</p>
+      <h3 style="color:#94a3b8;font-size:1.1rem;font-weight:700;">Folder is empty</h3>
+      <p style="color:#64748b;font-size:0.9rem;">Upload files or create subfolders to get started.</p>
       <a href="{{ url_for('dashboard') }}" class="btn btn-action btn-dl mt-2">
         <i class="bi bi-cloud-upload me-1"></i>Upload a File
       </a>
     </div>
   </div>
   {% endif %}
+
+</div>
+
+<!-- New Folder Modal -->
+<div class="modal fade" id="newFolderModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-content-custom">
+      <div class="modal-header modal-header-custom">
+        <h5 class="modal-title"><i class="bi bi-folder-plus me-2 text-primary"></i>Create New Folder</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="{{ url_for('create_folder') }}" method="POST">
+        <div class="modal-body modal-body-custom">
+          <input type="hidden" name="parent_id" value="{{ current_folder_id or '' }}">
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">FOLDER NAME</label>
+            <input type="text" name="name" class="form-control form-control-custom" placeholder="Enter folder name..." required autofocus>
+          </div>
+        </div>
+        <div class="modal-footer modal-footer-custom">
+          <button type="button" class="btn btn-action btn-expand" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-action btn-dl">Create Folder</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Rename Folder Modal -->
+<div class="modal fade" id="renameFolderModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-content-custom">
+      <div class="modal-header modal-header-custom">
+        <h5 class="modal-title"><i class="bi bi-pencil me-2 text-primary"></i>Rename Folder</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="renameFolderForm" method="POST">
+        <div class="modal-body modal-body-custom">
+          <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">NEW FOLDER NAME</label>
+            <input type="text" id="renameFolderName" name="name" class="form-control form-control-custom" required autofocus>
+          </div>
+        </div>
+        <div class="modal-footer modal-footer-custom">
+          <button type="button" class="btn btn-action btn-expand" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-action btn-dl">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 </div>
 {% endblock %}
@@ -319,18 +523,31 @@
   /* ── Search / filter ── */
   function filterFiles() {
     const q    = document.getElementById('searchInput').value.toLowerCase().trim();
-    const rows = document.querySelectorAll('#filesBody tr.file-row');
+    const rows = document.querySelectorAll('#filesBody tr');
     rows.forEach(row => {
       const name = row.getAttribute('data-name') || '';
       const show = !q || name.includes(q);
       row.style.display = show ? '' : 'none';
-      // Also hide/show corresponding version panel
-      const nextRow = row.nextElementSibling;
-      if (nextRow && nextRow.classList.contains('versions-row')) {
-        if (!show) nextRow.classList.remove('show');
-        nextRow.style.display = show ? '' : 'none';
+      
+      // Also handle version panels if it's a file summary row
+      if (row.classList.contains('file-row')) {
+        const nextRow = row.nextElementSibling;
+        if (nextRow && nextRow.classList.contains('versions-row')) {
+          if (!show) nextRow.classList.remove('show');
+          nextRow.style.display = show ? '' : 'none';
+        }
       }
     });
+  }
+
+  /* ── Folder Rename Modal ── */
+  function openRenameModal(id, currentName) {
+    const form = document.getElementById('renameFolderForm');
+    const input = document.getElementById('renameFolderName');
+    form.action = `/rename_folder/${id}`;
+    input.value = currentName;
+    const modal = new bootstrap.Modal(document.getElementById('renameFolderModal'));
+    modal.show();
   }
 </script>
 {% endblock %}

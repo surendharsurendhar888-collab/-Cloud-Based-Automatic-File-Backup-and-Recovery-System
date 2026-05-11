@@ -98,9 +98,35 @@
     .main-wrapper { padding: 2rem 1rem; }
 
     /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg-deep); }
     ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* ── Responsive Global ── */
+    @media (max-width: 768px) {
+      .navbar-custom { padding: 0.85rem 1rem; }
+      .navbar-brand-text { font-size: 1.15rem; }
+      .main-wrapper { padding: 1rem 0.5rem; }
+      .nav-link-custom { padding: 0.75rem 1rem !important; margin-bottom: 0.25rem; }
+      .navbar-collapse { 
+        background: rgba(13, 13, 26, 0.95); 
+        backdrop-filter: blur(10px); 
+        padding: 1rem; 
+        border-radius: 12px; 
+        margin-top: 0.5rem;
+        border: 1px solid var(--border);
+      }
+      .navbar-nav { gap: 0.5rem; }
+      .d-flex.align-items-center.gap-3 { 
+        flex-direction: column; 
+        align-items: flex-start !important; 
+        gap: 0.75rem !important; 
+        margin-top: 0.5rem; 
+        border-top: 1px solid var(--border); 
+        padding-top: 1rem; 
+      }
+      .btn-logout { width: 100%; text-align: center; }
+    }
   </style>
 
   {% block extra_head %}{% endblock %}
@@ -147,8 +173,8 @@
       </ul>
 
       <div class="d-flex align-items-center gap-3">
-        <span class="text-muted small">
-          <i class="bi bi-person-circle me-1 text-primary"></i>{{ session.get('username') }}
+        <span style="color:#93c5fd; font-size:0.875rem; font-weight:600; display:flex; align-items:center; gap:0.3rem;">
+          <i class="bi bi-person-circle" style="color:#4e8fff; font-size:1rem;"></i>{{ session.get('username') }}
         </span>
         <a href="{{ url_for('logout') }}" class="btn-logout btn">
           <i class="bi bi-box-arrow-right me-1"></i>Logout
