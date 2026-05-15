@@ -195,6 +195,17 @@ def init_db():
         )
     """)
 
+    # Recent Activity table for dashboard
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS recent_activity (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id     INTEGER,
+            file_id     INTEGER,
+            action      TEXT,
+            timestamp   TEXT    NOT NULL
+        )
+    """)
+
     # Migration for merging activity_logs data if it exists
     try:
         cur.execute("INSERT INTO activity_log (user_id, action, file_name, version, timestamp) SELECT user_id, action_type, file_name, version, timestamp FROM activity_logs")
