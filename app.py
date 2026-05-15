@@ -333,6 +333,9 @@ def get_supabase_folder_path(folder_id, conn):
     path_list = get_folder_path_list(folder_id, conn)
     return "/".join([secure_filename(f["name"]) for f in path_list])
 
+# Initialize database tables
+init_db()
+
 # ─── Routes ──────────────────────────────────────────────────────────────────
 
 @app.route("/")
@@ -390,8 +393,13 @@ def login_google():
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         flash("Google Sign-In is not configured by the administrator.", "danger")
         return redirect(url_for("login"))
-    # Always use localhost (not 127.0.0.1) to match Google Cloud Console registration
-    redirect_uri = "http://localhost:5000/auth/google"
+    # Use dynamic redirect URI for production compatibility
+    redirect_uri = url_for('auth_google', _external=True)
+    
+    # Render and other proxies might use http internally; force https for production OAuth
+    if 'localhost' not in redirect_uri and redirect_uri.startswith('http://'):
+        redirect_uri = redirect_uri.replace('http://', 'https://')
+        
     return oauth.google.authorize_redirect(
         redirect_uri,
         prompt="select_account consent"
@@ -1513,5 +1521,7 @@ def update_profile():
 
 # ─── Entry point ──────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    init_db()          # create tables if they don't exist
-    app.run(debug=True)
+    # In development, run with debug=True on port 5000
+    # In production, Gunicorn will handle the startup
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
