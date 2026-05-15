@@ -22,19 +22,29 @@
   <style>
     /* ── Root Design Tokens (Premium Dark SaaS) ── */
     :root {
-      --bg-deep:    #0f172a;
-      --bg-main:    #111827;
-      --bg-card:    rgba(30, 41, 59, 0.7);
+      --bg-deep:    #020617;
+      --bg-main:    #0f172a;
+      --bg-card:    rgba(30, 41, 59, 0.4);
       --accent-blue: #3b82f6;
       --accent-purple: #8b5cf6;
       --accent-cyan: #06b6d4;
-      --text-main:  #ffffff;
-      --text-muted: rgba(255, 255, 255, 0.7);
-      --border:     rgba(255, 255, 255, 0.1);
+      --accent-emerald: #10b981;
+      --text-main:  #f8fafc;
+      --text-muted: #94a3b8;
+      --border:     rgba(255, 255, 255, 0.08);
       --glass-bg:   rgba(255, 255, 255, 0.03);
       --glass-border: rgba(255, 255, 255, 0.1);
       --primary-gradient: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
       --cyan-gradient: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      --emerald-gradient: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     }
 
     /* ── Global Selection Highlight (Fix & Enhancement) ── */
@@ -55,6 +65,32 @@
       color: var(--text-main);
       overflow-x: hidden;
       scroll-behavior: smooth;
+      position: relative;
+    }
+
+    /* ── Background Blobs ── */
+    .blob-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .blob {
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0) 70%);
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: float 20s infinite alternate;
+    }
+    .blob-1 { top: -10%; left: -10%; background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%); }
+    .blob-2 { bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 70%); }
+    
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(50px, 50px) scale(1.1); }
     }
 
     h1, h2, h3, h4, h5, h6, .font-outfit {
@@ -62,34 +98,18 @@
       color: #ffffff !important;
     }
 
-    /* ── Subtitle & Visibility Fix ── */
-    p, .subtitle, .hero-description, .dashboard-subtitle, .small-text, .description-text {
-      color: rgba(255, 255, 255, 0.8) !important;
-      opacity: 1 !important;
-    }
-
-    .text-muted {
+    p, .subtitle, .text-muted {
       color: var(--text-muted) !important;
-      opacity: 1 !important;
-    }
-
-    label, span, small {
-      color: rgba(255, 255, 255, 0.75);
-    }
-
-    /* Prevent accidental dark text from Bootstrap or other sources */
-    .text-dark {
-      color: #ffffff !important;
     }
 
     /* ── Premium Navbar ── */
     .navbar-glass {
       backdrop-filter: blur(18px);
-      background: rgba(7, 15, 40, 0.75);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(2, 6, 23, 0.8);
+      border-bottom: 1px solid var(--border);
       padding: 0.8rem 0;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.4s ease;
+      z-index: 1040;
     }
     
     .navbar-brand-premium {
@@ -100,251 +120,6 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: -0.5px;
-      transition: opacity 0.3s ease;
-    }
-
-    .navbar-brand-premium:hover {
-      opacity: 0.8;
-    }
-
-    .nav-link-premium {
-      color: rgba(255, 255, 255, 0.65) !important;
-      font-weight: 500;
-      font-size: 0.92rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      margin: 0 0.25rem;
-      padding: 0.5rem 1rem !important;
-      border-radius: 50px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .nav-link-premium:hover {
-      color: var(--text-main) !important;
-      background: rgba(255, 255, 255, 0.05);
-      transform: translateY(-1px);
-    }
-
-    .nav-link-premium.active {
-      color: #fff !important;
-      background: rgba(59, 130, 246, 0.15);
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
-      position: relative;
-    }
-
-    .nav-link-premium.active::after {
-      content: '';
-      position: absolute;
-      bottom: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 4px;
-      height: 4px;
-      background: var(--accent-blue);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent-blue);
-    }
-
-    /* ── Profile Pill Dropdown ── */
-    .profile-container {
-      position: relative;
-    }
-
-    .profile-pill {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 0.4rem 0.8rem;
-      border-radius: 50px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    @media (min-width: 1200px) {
-      .profile-pill {
-        padding: 0.4rem 1rem;
-      }
-    }
-
-    .profile-pill:hover, .profile-pill.active {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
-    }
-
-    .profile-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--primary-gradient);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1rem;
-      box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-      flex-shrink: 0;
-    }
-
-    .profile-info {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.1;
-      margin-right: 4px;
-    }
-
-    .profile-name {
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: var(--text-main);
-      white-space: nowrap;
-    }
-
-    .profile-status {
-      font-size: 0.62rem;
-      color: var(--accent-cyan);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-weight: 800;
-    }
-
-    .dropdown-arrow {
-      font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.4);
-      transition: transform 0.3s ease;
-    }
-
-    .profile-pill.active .dropdown-arrow {
-      transform: rotate(180deg);
-    }
-
-    /* ── Premium Dropdown Menu ── */
-    .premium-dropdown {
-      position: absolute;
-      top: calc(100% + 12px);
-      right: 0;
-      width: 220px;
-      background: rgba(15, 23, 42, 0.9);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 18px;
-      padding: 0.8rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(10px);
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .premium-dropdown.show {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .dropdown-item-premium {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0.7rem 1rem;
-      color: rgba(255, 255, 255, 0.7);
-      text-decoration: none !important;
-      font-size: 0.9rem;
-      font-weight: 500;
-      border-radius: 12px;
-      transition: all 0.2s ease;
-    }
-
-    .dropdown-item-premium:hover {
-      background: rgba(59, 130, 246, 0.1);
-      color: #fff;
-      padding-left: 1.2rem;
-    }
-
-    .dropdown-item-premium i {
-      font-size: 1.1rem;
-      color: var(--accent-blue);
-      transition: all 0.2s ease;
-    }
-
-    .dropdown-item-premium:hover i {
-      transform: scale(1.1);
-      text-shadow: 0 0 8px var(--accent-blue);
-    }
-
-    .dropdown-divider-premium {
-      height: 1px;
-      background: rgba(255, 255, 255, 0.08);
-      margin: 0.6rem 0;
-    }
-
-    .logout-item {
-      color: #ef4444 !important;
-    }
-
-    .logout-item i {
-      color: #ef4444 !important;
-    }
-
-    .logout-item:hover {
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .btn-gradient {
-      background: var(--primary-gradient);
-      border: none;
-      color: white;
-      font-weight: 600;
-      padding: 0.6rem 1.5rem;
-      border-radius: 50px;
-      transition: all 0.3s ease;
-    }
-
-    .btn-gradient:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
-      color: white;
-    }
-
-    .btn-outline-premium {
-      border: 1px solid var(--glass-border);
-      background: var(--glass-bg);
-      color: var(--text-main);
-      font-weight: 600;
-      padding: 0.6rem 1.5rem;
-      border-radius: 50px;
-      transition: all 0.3s ease;
-    }
-
-    .btn-outline-premium:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--text-main);
-      color: var(--text-main);
-    }
-
-    .btn:focus-visible, a:focus-visible {
-      outline: 2px solid var(--accent-blue);
-      outline-offset: 3px;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
-    }
-
-    /* ── Global Utilities ── */
-    .glass-panel {
-      background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .glass-panel:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.2);
     }
 
     .text-gradient-blue {
@@ -353,26 +128,138 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    .text-gradient-purple {
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-    /* ── Page Loader ── */
+    .nav-link-premium {
+      color: var(--text-muted) !important;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      padding: 0.5rem 1rem !important;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-link-premium:hover, .nav-link-premium.active {
+      color: #fff !important;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-link-premium.active {
+      background: rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.05);
+    }
+
+    /* ── Profile Account Panel (Google Style) ── */
+    .profile-avatar-sm {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+    .profile-avatar-sm:hover { border-color: var(--accent-blue); transform: scale(1.05); }
+    .profile-avatar-sm img { width: 100%; height: 100%; object-fit: cover; }
+
+    .profile-panel-premium {
+      width: 320px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      animation: slideInDown 0.3s ease-out;
+    }
+
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-avatar-lg {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      border: 3px solid rgba(255,255,255,0.05);
+    }
+    .profile-avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+
+    .dropdown-item-premium {
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      border-radius: var(--radius-sm);
+    }
+    .dropdown-item-premium:hover {
+      background: rgba(255,255,255,0.03);
+      color: #fff;
+    }
+    .dropdown-item-premium i { width: 20px; }
+
+    .dropdown-divider-premium {
+      height: 1px;
+      background: var(--border);
+      margin: 0.5rem 0;
+    }
+
+    /* ── Mobile Offcanvas ── */
+    .offcanvas {
+      border: none !important;
+      box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+    }
+    .offcanvas .nav-link-premium {
+      border-radius: 0;
+      margin: 0;
+      border-left: 3px solid transparent;
+    }
+    .offcanvas .nav-link-premium.active {
+      background: rgba(59, 130, 246, 0.05);
+      border-left-color: var(--accent-blue);
+    }
+
+    /* ── Buttons ── */
+    .btn-gradient {
+      background: var(--primary-gradient);
+      border: none; color: #fff;
+      font-weight: 600;
+      border-radius: 50px;
+      padding: 0.6rem 1.5rem;
+      transition: all 0.3s;
+    }
+    .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); color: #fff; }
+
+    .btn-outline-premium {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-main);
+      border-radius: 50px;
+      padding: 0.5rem 1.25rem;
+      transition: all 0.2s;
+    }
+    .btn-outline-premium:hover { background: rgba(255,255,255,0.05); border-color: #fff; }
+
+    /* ── Global Top Loader ── */
     #page-loader {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 4px;
-      background: var(--bg-deep);
-      z-index: 9999;
-      display: none;
+      position: fixed; top: 0; left: 0; width: 100%; height: 3px;
+      z-index: 10000; display: none; background: rgba(2, 6, 23, 0.5);
     }
     #page-loader .progress-fill {
-      height: 100%;
-      width: 0;
+      height: 100%; width: 0;
       background: var(--primary-gradient);
-      box-shadow: 0 0 15px var(--accent-blue);
+      box-shadow: 0 0 10px var(--accent-blue);
       transition: width 0.4s ease;
-    }
-
-    .section-padding {
-      padding: 100px 0;
     }
 
     @media (max-width: 991px) {
@@ -439,6 +326,12 @@
   {% block extra_head %}{% endblock %}
 </head>
 <body>
+  <!-- Background Blobs -->
+  <div class="blob-container">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
   <!-- Global Top Loader -->
   <div id="page-loader"><div class="progress-fill"></div></div>
 
@@ -451,11 +344,12 @@
         <span class="navbar-brand-premium">CloudProtect AI</span>
       </a>
       
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
         <i class="bi bi-list fs-1"></i>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Desktop Links -->
+      <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
         <ul class="navbar-nav mx-auto">
           {% if session.get('user_id') %}
             <!-- App Links (Visible when logged in) -->
@@ -512,40 +406,59 @@
         
         <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
           {% if session.get('user_id') %}
-            <div class="profile-container">
-              <div class="profile-pill" id="profileDropdownTrigger" aria-haspopup="true" aria-expanded="false" role="button">
-                <div class="profile-avatar">
+            <!-- Profile Dropdown (Desktop) -->
+            <div class="dropdown d-none d-lg-block">
+              <a class="nav-link profile-trigger p-0" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="profile-avatar-sm">
                   {% if session.get('avatar') %}
-                    <img src="{{ url_for('static', filename='uploads/profile/' + session.get('avatar')) }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    <img src="{{ url_for('static', filename='uploads/profile/' + session.get('avatar')) }}" alt="Avatar">
                   {% else %}
                     <i class="bi bi-person-fill"></i>
                   {% endif %}
                 </div>
-                <div class="profile-info d-none d-xl-flex">
-                  <span class="profile-name">{{ session.get('username') }}</span>
-                  <span class="profile-status">Pro User</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-end profile-panel-premium p-0" aria-labelledby="profileDropdown">
+                <div class="profile-panel-header p-4 text-center">
+                  <div class="profile-avatar-lg mx-auto mb-3">
+                    {% if session.get('avatar') %}
+                      <img src="{{ url_for('static', filename='uploads/profile/' + session.get('avatar')) }}" alt="Avatar">
+                    {% else %}
+                      <i class="bi bi-person-fill fs-1"></i>
+                    {% endif %}
+                  </div>
+                  <h6 class="fw-bold mb-0 text-white">{{ session.get('username') }}</h6>
+                  <p class="small text-muted mb-3">{{ session.get('email') or 'Personal Account' }}</p>
+                  <a href="{{ url_for('settings') }}" class="btn btn-outline-premium btn-sm rounded-pill px-4">Manage Account</a>
                 </div>
-                <i class="bi bi-chevron-down dropdown-arrow"></i>
-              </div>
+                
+                <div class="profile-panel-plan p-3 mx-3 mb-3 glass-panel">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold">Free Plan</span>
+                    <span class="badge bg-primary-soft text-primary small">Basic</span>
+                  </div>
+                  <div class="progress mb-2" style="height: 4px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 25%"></div>
+                  </div>
+                  <div class="d-flex justify-content-between smaller text-muted">
+                    <span>Active Storage</span>
+                    <span>5 GB total</span>
+                  </div>
+                </div>
 
-              <!-- Premium Dropdown Menu -->
-              <div class="premium-dropdown" id="profileDropdownMenu">
-                <a href="{{ url_for('dashboard') }}" class="dropdown-item-premium">
-                  <i class="bi bi-person-circle"></i> Profile
-                </a>
-                <a href="{{ url_for('activity') }}" class="dropdown-item-premium">
-                  <i class="bi bi-activity"></i> Activity
-                </a>
-                <a href="{{ url_for('analytics') }}" class="dropdown-item-premium">
-                  <i class="bi bi-bar-chart"></i> Analytics
-                </a>
-                <a href="{{ url_for('settings') }}" class="dropdown-item-premium">
-                  <i class="bi bi-gear"></i> Settings
-                </a>
                 <div class="dropdown-divider-premium"></div>
-                <a href="/logout" class="dropdown-item-premium logout-item">
-                  <i class="bi bi-box-arrow-right"></i> Logout
-                </a>
+                
+                <div class="p-2">
+                  <a class="dropdown-item dropdown-item-premium" href="{{ url_for('settings') }}">
+                    <i class="bi bi-gear-fill me-3"></i> Account Settings
+                  </a>
+                  <a class="dropdown-item dropdown-item-premium" href="{{ url_for('activity') }}">
+                    <i class="bi bi-activity me-3"></i> Security Activity
+                  </a>
+                  <div class="dropdown-divider-premium"></div>
+                  <a class="dropdown-item dropdown-item-premium logout-item" href="/logout">
+                    <i class="bi bi-box-arrow-right me-3"></i> Sign Out
+                  </a>
+                </div>
               </div>
             </div>
           {% else %}
@@ -556,6 +469,80 @@
       </div>
     </div>
   </nav>
+
+  <!-- ── Mobile Offcanvas Sidebar ── -->
+  <div class="offcanvas offcanvas-start bg-deep border-end border-opacity-10" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel" style="background-color: var(--bg-deep); width: 280px;">
+    <div class="offcanvas-header border-bottom border-opacity-10 px-4 py-4">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <i class="bi bi-cloud-check-fill me-2 fs-3" style="color: var(--accent-cyan)"></i>
+        <span class="navbar-brand-premium">CloudProtect</span>
+      </a>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body px-0">
+      <div class="px-4 mb-4">
+        {% if session.get('user_id') %}
+          <div class="d-flex align-items-center gap-3 p-3 glass-panel" style="border-radius: var(--radius-md)">
+            <div class="profile-avatar" style="width: 48px; height: 48px;">
+              {% if session.get('avatar') %}
+                <img src="{{ url_for('static', filename='uploads/profile/' + session.get('avatar')) }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+              {% else %}
+                <i class="bi bi-person-fill fs-4"></i>
+              {% endif %}
+            </div>
+            <div>
+              <div class="fw-bold">{{ session.get('username') }}</div>
+              <div class="small text-muted">Pro Plan Member</div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <ul class="navbar-nav">
+        {% if session.get('user_id') %}
+          <li class="nav-item">
+            <a class="nav-link nav-link-premium py-3 px-4 {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">
+              <i class="bi bi-grid-fill me-3"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-premium py-3 px-4 {% if request.endpoint == 'files' %}active{% endif %}" href="{{ url_for('files') }}">
+              <i class="bi bi-folder-fill me-3"></i> My Files
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-premium py-3 px-4 {% if request.endpoint == 'recent' %}active{% endif %}" href="{{ url_for('recent') }}">
+              <i class="bi bi-clock-fill me-3"></i> Recent Files
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-premium py-3 px-4 {% if request.endpoint == 'starred' %}active{% endif %}" href="{{ url_for('starred') }}">
+              <i class="bi bi-star-fill me-3 text-warning"></i> Starred
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-premium py-3 px-4 {% if request.endpoint == 'activity' %}active{% endif %}" href="{{ url_for('activity') }}">
+              <i class="bi bi-lightning-charge-fill me-3"></i> Activity
+            </a>
+          </li>
+          <div class="dropdown-divider-premium mx-4"></div>
+          <li class="nav-item">
+            <a class="nav-link nav-link-premium py-3 px-4 {% if request.endpoint == 'settings' %}active{% endif %}" href="{{ url_for('settings') }}">
+              <i class="bi bi-gear-fill me-3"></i> Settings
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nav-link-premium py-3 px-4 logout-item" href="/logout">
+              <i class="bi bi-box-arrow-right me-3"></i> Logout
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link nav-link-premium py-3 px-4" href="/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-premium py-3 px-4" href="/register">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
 
   <!-- ── Flash Messages ── -->
   <div class="container mt-3">

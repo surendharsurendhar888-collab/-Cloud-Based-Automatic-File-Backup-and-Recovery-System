@@ -158,4 +158,43 @@ document.addEventListener('DOMContentLoaded', () => {
     suggestionPills.forEach(pill => {
         pill.addEventListener('click', () => sendMessage(pill.textContent));
     });
+
+    // ── Storage Ring Calculation ──
+    const ring = document.getElementById('storageRingFill');
+    const pctText = document.getElementById('storagePctText');
+    const storageValueStr = "{{ total_storage }}"; // Will be rendered by Jinja in the template if we were inline, but in external JS we need to get it from DOM
+
+    function updateStorageRing() {
+        if (!ring || !pctText) return;
+        
+        // Extract numerical value and unit from the stat-value text
+        const statValue = document.querySelector('.stat-value').textContent.trim();
+        const parts = statValue.split(' ');
+        let size = parseFloat(parts[0]);
+        const unit = parts[1] ? parts[1].toUpperCase() : 'B';
+        
+        // Convert to bytes
+        let bytes = size;
+        if (unit === 'KB') bytes *= 1024;
+        else if (unit === 'MB') bytes *= 1024 * 1024;
+        else if (unit === 'GB') bytes *= 1024 * 1024 * 1024;
+        
+        const limit = 5 * 1024 * 1024 * 1024; // 5GB
+        let pct = (bytes / limit) * 100;
+        if (pct > 100) pct = 100;
+        if (pct < 1) pct = 1; // Show at least a tiny bit if there's data
+        
+        const circumference = 2 * Math.PI * 52; // r=52
+        const offset = circumference - (pct / 100) * circumference;
+        ring.style.strokeDashoffset = offset;
+        pctText.textContent = Math.round(pct) + '%';
+    }
+
+    // Call after a short delay for animation effect
+    setTimeout(updateStorageRing, 500);
+
+    // ── Global toggleAI for the Insight Card ──
+    window.toggleAI = () => {
+        if (toggleBtn) toggleBtn.click();
+    };
 });

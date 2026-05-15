@@ -22,7 +22,11 @@ A professional, full-stack **SaaS-style** cloud backup platform built with **Fla
 | 📂 **Folder Upload Target** | Select destination folder before uploading from the dashboard |
 | 🛡️ **Admin Panel** | Admin-only dashboard for global system analytics |
 | 📋 **Activity Logs** | Tracks all upload, download, restore, and delete actions |
-| 📱 **Fully Responsive** | Bootstrap 5 — works on desktop, tablet, and mobile |
+| 📱 **Fully Responsive** | Mobile-first offcanvas sidebar + table-to-card transformations for small screens |
+| 💎 **Premium UI/UX** | Dark-mode glassmorphism, animated background blobs, and storage progress ring |
+| 🛡️ **Account Panel** | Google-style profile dashboard with plan status and quick actions |
+| 🏷️ **Dynamic Icons** | Automatic file-type detection and icon assignment (PDF, Image, Video, Code, etc.) |
+| ⚡ **Micro-interactions**| Skeleton loaders, hover lifts, and smooth page transitions |
 
 ---
 

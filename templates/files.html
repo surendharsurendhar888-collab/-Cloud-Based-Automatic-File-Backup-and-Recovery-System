@@ -245,7 +245,7 @@
   <!-- ── Files Table ── -->
   <div class="files-table-container">
     <div class="table-responsive">
-      <table class="table table-dark table-hover files-table-premium mb-0">
+      <table class="table table-dark table-hover files-table-premium mb-0 responsive-table-stack">
         <thead>
           <tr>
             <th style="width: 40%">Name</th>
@@ -258,7 +258,7 @@
           <!-- Subfolders -->
           {% for folder in subfolders %}
           <tr data-name="{{ folder.name|lower }}">
-            <td>
+            <td data-label="Name">
               <a href="{{ url_for('files', folder_id=folder.id) }}" class="text-decoration-none d-flex align-items-center">
                 <div class="file-icon-premium folder-icon-premium me-3">
                   <i class="bi bi-folder-fill"></i>
@@ -266,9 +266,9 @@
                 <span class="fw-bold text-main">{{ folder.name }}</span>
               </a>
             </td>
-            <td><span class="text-muted small">Folder</span></td>
-            <td><span class="text-muted small">{{ folder.created_at }}</span></td>
-            <td>
+            <td data-label="Latest Ver."><span class="text-muted small">Folder</span></td>
+            <td data-label="Last Modified"><span class="text-muted small">{{ folder.created_at }}</span></td>
+            <td data-label="Actions">
               <div class="d-flex gap-2">
                 <button class="btn btn-action-premium btn-ver-premium" title="Rename"
                         onclick="openRenameModal('{{ folder.id }}', '{{ folder.name }}')">
@@ -292,9 +292,9 @@
             <tr data-name="{{ row.original_name|lower }}" 
                 ondblclick="openPreview('{{ latest_id }}', '{{ row.original_name }}')"
                 style="cursor: pointer;">
-              <td>
+              <td data-label="Name">
                 <div class="d-flex align-items-center">
-                  <div class="file-icon-premium me-3">
+                  <div class="file-icon-premium me-3 file-icon-dynamic" data-filename="{{ row.original_name }}">
                     <i class="bi bi-file-earmark-fill"></i>
                   </div>
                   <div class="d-flex flex-column">
@@ -303,10 +303,10 @@
                   </div>
                 </div>
               </td>
-              <td><span class="badge-premium-v">v{{ row.latest_version }}</span></td>
-              <td><span class="text-muted small">{{ row.last_modified }}</span></td>
-              <td>
-                <div class="d-flex gap-2 align-items-center">
+              <td data-label="Latest Ver."><span class="badge-premium-v">v{{ row.latest_version }}</span></td>
+              <td data-label="Last Modified"><span class="text-muted small">{{ row.last_modified }}</span></td>
+              <td data-label="Actions">
+                <div class="d-flex gap-2 align-items-center justify-content-md-start justify-content-end">
                   {% if versions %}
                   <button class="btn btn-sm star-btn p-1 me-1" data-file-id="{{ latest_id }}" title="{% if row.is_starred %}Unstar{% else %}Star{% endif %}">
                     <i class="bi {% if row.is_starred %}bi-star-fill text-warning glowing-star{% else %}bi-star text-muted{% endif %} fs-5"></i>

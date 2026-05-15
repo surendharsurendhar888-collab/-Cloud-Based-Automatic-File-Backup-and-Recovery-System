@@ -152,3 +152,35 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+// Dynamic Icon Mapping
+document.addEventListener('DOMContentLoaded', () => {
+    const dynamicIcons = document.querySelectorAll('.file-icon-dynamic');
+    dynamicIcons.forEach(iconBox => {
+        const filename = iconBox.getAttribute('data-filename');
+        if (!filename) return;
+        const ext = filename.split('.').pop().toLowerCase();
+        const icon = iconBox.querySelector('i');
+        if (!icon) return;
+
+        // Reset class
+        icon.className = 'bi';
+
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) {
+            icon.classList.add('bi-file-earmark-image-fill', 'text-info');
+        } else if (['mp4', 'webm', 'ogg', 'mov'].includes(ext)) {
+            icon.classList.add('bi-file-earmark-play-fill', 'text-warning');
+        } else if (['pdf'].includes(ext)) {
+            icon.classList.add('bi-file-earmark-pdf-fill', 'text-danger');
+        } else if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
+            icon.classList.add('bi-file-earmark-zip-fill', 'text-warning');
+        } else if (['py', 'js', 'html', 'css', 'json', 'md', 'sql', 'cpp', 'java'].includes(ext)) {
+            icon.classList.add('bi-file-earmark-code-fill', 'text-success');
+        } else if (['doc', 'docx', 'odt'].includes(ext)) {
+            icon.classList.add('bi-file-earmark-word-fill', 'text-primary');
+        } else if (['xls', 'xlsx', 'csv'].includes(ext)) {
+            icon.classList.add('bi-file-earmark-excel-fill', 'text-success');
+        } else {
+            icon.classList.add('bi-file-earmark-fill', 'text-muted');
+        }
+    });
+});
