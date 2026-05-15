@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Trash Bin - CloudProtect AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1">Trash Bin</h2>
+            <p class="text-muted small mb-0">Recover deleted files or permanently delete them</p>
+        </div>
+        {% if deleted_files %}
+        <form action="{{ url_for('empty_trash') }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete ALL files in the trash? This cannot be undone.');">
+            <button type="submit" class="btn btn-outline-danger rounded-pill px-4">
+                <i class="bi bi-trash-fill me-2"></i> Empty Trash
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="glass-panel p-4 shadow-lg overflow-hidden">
+        {% if deleted_files %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0" style="background: transparent !important;">
+                <thead>
+                    <tr class="border-bottom border-secondary">
+                        <th class="py-3 px-4 text-muted small fw-bold">FILENAME</th>
+                        <th class="py-3 px-4 text-muted small fw-bold">DELETED AT</th>
+                        <th class="py-3 px-4 text-muted small fw-bold text-end">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for file in deleted_files %}
+                    <tr class="align-middle border-bottom border-secondary-subtle" style="background: transparent !important;">
+                        <td class="py-3 px-4">
+                            <div class="d-flex align-items-center">
+                                <div class="file-icon me-3">
+                                    {% set ext = file.original_name.split('.')[-1].lower() if '.' in file.original_name else '' %}
+                                    <i class="bi {% if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp'] %}bi-file-earmark-image text-info{% elif ext == 'pdf' %}bi-file-earmark-pdf text-danger{% elif ext in ['mp4', 'mov', 'avi'] %}bi-file-earmark-play text-warning{% elif ext in ['zip', 'rar', '7z'] %}bi-file-earmark-zip text-secondary{% else %}bi-file-earmark-text text-primary{% endif %} fs-4"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-white mb-0">{{ file.original_name }}</div>
+                                    <small class="text-muted">Version {{ file.version }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-muted">
+                            {{ file.deleted_at }}
+                        </td>
+                        <td class="py-3 px-4 text-end">
+                            <div class="d-flex justify-content-end gap-2">
+                                <form action="{{ url_for('restore_from_trash', file_id=file.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3" title="Restore">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i> Restore
+                                    </button>
+                                </form>
+                                <form action="{{ url_for('permanent_delete', file_id=file.id) }}" method="POST" onsubmit="return confirm('This will permanently delete the file. Proceed?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3" title="Delete Permanently">
+                                        <i class="bi bi-trash3 me-1"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-recycle fs-1 text-muted opacity-25"></i>
+            </div>
+            <h5 class="text-white opacity-50">Trash bin is empty</h5>
+            <p class="text-muted small">Your deleted files will appear here for 30 days.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -4,340 +4,279 @@
 
 {% block extra_head %}
 <style>
-  /* ── Search bar ── */
-  .search-wrap { position: relative; }
-  .search-wrap .bi {
-    position: absolute; left: 0.9rem; top: 50%;
-    transform: translateY(-50%); color: #475569;
-  }
-  .search-input {
-    background: rgba(255,255,255,0.05) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    color: #e2e8f0 !important;
-    border-radius: 10px !important;
-    padding: 0.65rem 1rem 0.65rem 2.5rem !important;
-    font-size: 0.92rem;
-    width: 100%;
-    transition: all 0.25s ease;
-  }
-  .search-input:focus {
-    border-color: #4e8fff !important;
-    box-shadow: 0 0 0 3px rgba(78,143,255,0.15) !important;
-    outline: none !important;
-    background: rgba(78,143,255,0.06) !important;
-  }
-  .search-input::placeholder { color: #475569 !important; }
-
-  /* ── Page header ── */
-  .page-header {
-    background: linear-gradient(135deg, #16213e, #0f2040);
-    border: 1px solid rgba(78,143,255,0.1);
-    border-radius: 16px;
-    padding: 1.4rem 1.8rem;
-    margin-bottom: 1.5rem;
-    display: flex; align-items: center; gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .page-header h1 {
-    font-size: 1.3rem; font-weight: 800; color: #e2e8f0;
-    margin: 0;
-  }
-  .page-header p { color: #64748b; font-size: 0.85rem; margin: 0.15rem 0 0; }
-
-  /* ── Files table wrapper ── */
-  .files-table-wrap {
-    background: linear-gradient(145deg, #16213e, #0f2040);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 16px;
+  /* ── Files Premium Overrides ── */
+  .files-table-container {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    margin-top: 1.5rem;
   }
-
-  .files-table {
+  
+  .files-table-premium {
     width: 100%;
-    border-collapse: collapse;
+    margin-bottom: 0;
+    color: var(--text-main);
   }
-  .files-table thead th {
-    background: rgba(15,52,96,0.6);
-    color: #64748b;
-    font-size: 0.78rem; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 0.07em;
-    padding: 0.9rem 1.1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    white-space: nowrap;
+  .files-table-premium th {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1.25rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
   }
-  .files-table tbody tr.file-row {
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    transition: background 0.2s;
-  }
-  .files-table tbody tr.file-row:hover { background: rgba(78,143,255,0.04); }
-  .files-table tbody td {
-    padding: 0.9rem 1.1rem;
-    color: #e2e8f0; font-size: 0.9rem;
+  .files-table-premium td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
     vertical-align: middle;
   }
+  .files-table-premium tr:last-child td { border-bottom: none; }
+  .files-table-premium tr:hover { background: rgba(255, 255, 255, 0.01); }
 
-  .file-name-cell { display: flex; align-items: center; gap: 0.65rem; }
-  .file-icon-bg {
-    width: 36px; height: 36px; border-radius: 9px;
-    background: rgba(78,143,255,0.15);
-    display: flex; align-items: center; justify-content: center;
-    color: #4e8fff; font-size: 1rem; flex-shrink: 0;
+  .file-icon-premium {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-blue);
   }
-  .file-name-text { font-weight: 600; color: #e2e8f0; }
-  .file-name-text small { color: #64748b; font-size: 0.78rem; display: block; margin-top: 1px; }
-
-  .badge-version {
-    background: rgba(78,143,255,0.18);
-    color: #4e8fff;
-    font-size: 0.78rem; font-weight: 700;
-    padding: 0.25rem 0.65rem;
-    border-radius: 20px;
-    border: 1px solid rgba(78,143,255,0.25);
-  }
-  .badge-count {
-    background: rgba(0,196,140,0.15);
-    color: #00c48c;
-    font-size: 0.78rem; font-weight: 700;
-    padding: 0.25rem 0.65rem;
-    border-radius: 20px;
-    border: 1px solid rgba(0,196,140,0.2);
+  .folder-icon-premium {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--accent-purple);
   }
 
-  /* ── Action buttons ── */
-  .btn-action {
-    font-size: 0.78rem; font-weight: 600;
-    padding: 0.35rem 0.75rem;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-  }
-  .btn-dl    { background:rgba(0,196,140,0.15); border-color:rgba(0,196,140,0.3); color:#00c48c; }
-  .btn-dl:hover { background:rgba(0,196,140,0.28); color:#00c48c; transform:translateY(-1px); }
-  .btn-expand{ background:rgba(78,143,255,0.15); border-color:rgba(78,143,255,0.3); color:#4e8fff; }
-  .btn-expand:hover{ background:rgba(78,143,255,0.28); color:#4e8fff; transform:translateY(-1px); }
-  .btn-restore{ background:rgba(139,92,246,0.15); border-color:rgba(139,92,246,0.3); color:#a78bfa; }
-  .btn-restore:hover{ background:rgba(139,92,246,0.28); color:#a78bfa; transform:translateY(-1px); }
-  .btn-del   { background:rgba(255,77,109,0.15); border-color:rgba(255,77,109,0.3); color:#ff4d6d; }
-  .btn-del:hover{ background:rgba(255,77,109,0.28); color:#ff4d6d; transform:translateY(-1px); }
-
-  /* ── Version history sub-table ── */
-  .versions-row td { padding: 0 !important; border-top: none !important; }
-  .versions-panel {
-    background: rgba(10,17,40,0.6);
-    border-top: 1px solid rgba(78,143,255,0.12);
-    padding: 1rem 1.5rem 1.2rem;
-    animation: slideDown 0.25s ease;
-  }
-  @keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
-  .versions-panel .vtitle {
-    font-size: 0.78rem; font-weight: 700; color: #64748b;
-    text-transform: uppercase; letter-spacing: 0.07em;
-    margin-bottom: 0.7rem;
-  }
-  .version-item {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 9px; margin-bottom: 4px;
-    background: rgba(22,33,62,0.7);
-    flex-wrap: wrap;
-    transition: background 0.2s;
-  }
-  .version-item:hover { background: rgba(22,33,62,1); }
-  .version-item .vnum {
-    min-width: 52px;
-    font-weight: 700; font-size: 0.85rem; color: #4e8fff;
-  }
-  .version-item .vdate { color: #64748b; font-size: 0.8rem; flex: 1; }
-  .version-item .vactions { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-
-  /* ── Empty state ── */
-  .empty-state {
-    text-align: center; padding: 3rem 1rem; color: #475569;
-  }
-  .empty-state i { font-size: 3rem; display: block; margin-bottom: 0.8rem; }
-
-  .date-text { color: #64748b; font-size: 0.85rem; }
-
-  /* ── File row hidden / show ── */
-  .versions-row { display: none; }
-  .versions-row.show { display: table-row; }
-
-  /* ── Breadcrumbs ── */
-  .breadcrumb-nav {
+  .breadcrumb-premium {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem 0;
+    font-size: 0.9rem;
+    border: 1px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  .breadcrumb-premium a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .breadcrumb-premium a:hover { color: var(--accent-blue); }
+  .breadcrumb-premium .active { color: var(--text-main); font-weight: 600; }
+
+  /* ── Action Buttons Premium ── */
+  .btn-action-premium {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
     font-size: 0.85rem;
-    color: #64748b;
+    font-weight: 600;
+    transition: all 0.2s;
+    border: 1px solid transparent;
   }
-  .breadcrumb-item-custom {
+  .btn-dl-premium { background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.2); }
+  .btn-dl-premium:hover { background: var(--accent-cyan); color: white; }
+  
+  .btn-ver-premium { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); border-color: rgba(59, 130, 246, 0.2); }
+  .btn-ver-premium:hover { background: var(--accent-blue); color: white; }
+
+  .btn-del-premium { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
+  .btn-del-premium:hover { background: #ef4444; color: white; }
+
+  .btn-preview-premium { background: rgba(139, 92, 246, 0.1); color: var(--accent-purple); border-color: rgba(139, 92, 246, 0.2); }
+  .btn-preview-premium:hover { background: var(--accent-purple); color: white; }
+
+  /* ── Preview Modal Premium ── */
+  .modal-preview-premium .modal-content {
+    background: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .preview-container-premium {
+    min-height: 400px;
+    max-height: 70vh;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-  }
-  .breadcrumb-item-custom a {
-    color: #4e8fff;
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .breadcrumb-item-custom a:hover {
-    color: #8B5CF6;
-  }
-  .breadcrumb-separator {
-    color: #475569;
-  }
-
-  /* ── Folder Row ── */
-  .folder-row {
-    background: rgba(78, 143, 255, 0.04);
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    transition: background 0.2s;
-  }
-  .folder-row:hover { background: rgba(78, 143, 255, 0.08); }
-  .folder-icon-bg {
-    width: 36px; height: 36px; border-radius: 9px;
-    background: rgba(139, 92, 246, 0.15);
-    display: flex; align-items: center; justify-content: center;
-    color: #a78bfa; font-size: 1.1rem; flex-shrink: 0;
-  }
-  .folder-link {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    width: 100%;
-  }
-
-  /* ── Modal styling ── */
-  .modal-content-custom {
-    background: #16213e;
-    border: 1px solid rgba(255,255,255,0.1);
+    justify-content: center;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 16px;
-    color: #e2e8f0;
-  }
-  .modal-header-custom {
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding: 1.25rem 1.5rem;
-  }
-  .modal-body-custom { padding: 1.5rem; }
-  .modal-footer-custom {
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding: 1.25rem 1.5rem;
-  }
-  .form-control-custom {
-    background: rgba(0,0,0,0.2) !important;
-    border: 1px solid rgba(255,255,255,0.1) !important;
-    color: #e2e8f0 !important;
-    border-radius: 10px !important;
-  }
-  .form-control-custom:focus {
-    border-color: #4e8fff !important;
-    box-shadow: 0 0 0 3px rgba(78,143,255,0.15) !important;
+    padding: 20px;
+    position: relative;
   }
 
-  /* ── Responsive Mobile Table ── */
+  .preview-content-img {
+    max-width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+  }
+  
+  .preview-content-img:hover {
+    transform: scale(1.02);
+  }
+
+  .preview-content-video {
+    width: 100%;
+    max-height: 65vh;
+    border-radius: 12px;
+    outline: none;
+  }
+
+  .preview-content-pdf {
+    width: 100%;
+    height: 65vh;
+    border: none;
+    border-radius: 12px;
+  }
+
+  .preview-content-text {
+    width: 100%;
+    text-align: left;
+    color: var(--text-main);
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-all;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .preview-unsupported {
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .preview-unsupported i {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .preview-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+
+
+  /* ── Version History Panel Premium ── */
+  .version-panel-premium {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    border: 1px solid var(--border);
+  }
+  .version-item-premium {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border);
+  }
+
+  /* ── Modal Premium ── */
+  .modal-content-premium {
+    background: var(--bg-deep);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+  }
+  .modal-header-premium { border-bottom: 1px solid var(--border); padding: 1.5rem; }
+  .modal-footer-premium { border-top: 1px solid var(--border); padding: 1.5rem; }
+
   @media (max-width: 768px) {
-    .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1rem; }
-    .search-wrap { width: 100%; min-width: auto !important; }
-    
-    .files-table thead { display: none; }
-    .files-table tbody tr.file-row { display: flex; flex-direction: column; padding: 1rem; gap: 0.5rem; position: relative; }
-    .files-table tbody td { padding: 0.25rem 0; border: none; display: flex; align-items: center; gap: 0.5rem; }
-    .files-table tbody tr.file-row td:first-child { padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); width: 100%; justify-content: flex-start; }
-    
-    .files-table tbody tr.file-row td:nth-child(2)::before { content: "LATEST:"; color: #64748b; font-size: 0.75rem; font-weight: 700; width: 80px; }
-    .files-table tbody tr.file-row td:nth-child(3)::before { content: "MODIFIED:"; color: #64748b; font-size: 0.75rem; font-weight: 700; width: 80px; }
-    .files-table tbody tr.file-row td:nth-child(4)::before { content: "VERSIONS:"; color: #64748b; font-size: 0.75rem; font-weight: 700; width: 80px; }
-    
-    .files-table tbody tr.file-row td:last-child { margin-top: 0.5rem; padding-top: 0.75rem; border-top: 1px dashed rgba(255,255,255,0.06); width: 100%; justify-content: flex-start; }
-    
-    .versions-panel { padding: 1rem; }
-    .version-item { flex-direction: column; align-items: flex-start; padding: 0.75rem; gap: 0.5rem; }
-    .version-item .vdate { width: 100%; margin-bottom: 0.25rem; }
-    .version-item .vactions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-    .version-item .vactions .btn { width: 100%; display: flex; justify-content: center; }
+    .files-table-premium thead { display: none; }
+    .files-table-premium td { display: block; width: 100%; border: none; padding: 0.75rem 1.5rem; }
+    .files-table-premium tr { border-bottom: 1px solid var(--border); padding: 1rem 0; display: block; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-3 px-md-4" style="max-width:1280px;margin:auto;">
+<div class="container py-4">
 
-  <!-- Breadcrumb Navigation -->
-  <div class="breadcrumb-nav">
-    <div class="breadcrumb-item-custom">
-      <a href="{{ url_for('files') }}"><i class="bi bi-house-door me-1"></i>Home</a>
-    </div>
+  <!-- ── Breadcrumbs Premium ── -->
+  <nav class="breadcrumb-premium" aria-label="breadcrumb">
+    <a href="{{ url_for('files') }}"><i class="bi bi-house-door-fill me-1"></i> Root</a>
     {% for crumb in breadcrumbs %}
-    <span class="breadcrumb-separator"><i class="bi bi-chevron-right small"></i></span>
-    <div class="breadcrumb-item-custom">
-      <a href="{{ url_for('files', folder_id=crumb.id) }}">{{ crumb.name }}</a>
-    </div>
+      <i class="bi bi-chevron-right small text-muted mx-1"></i>
+      <a href="{{ url_for('files', folder_id=crumb.id) }}" class="{% if loop.last %}active{% endif %}">{{ crumb.name }}</a>
     {% endfor %}
-  </div>
+  </nav>
 
-  <!-- Page Header -->
-  <div class="page-header">
+  <!-- ── Page Header ── -->
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
     <div>
-      <h1><i class="bi bi-folder2-open me-2 text-primary"></i>My Files</h1>
-      <p>All your backed-up files with complete version history</p>
+      <h2 class="font-outfit fw-bold mb-1">My <span class="text-gradient-blue">Cloud Storage</span></h2>
+      <p class="text-muted small mb-0">Manage your files, folders, and version history with AI assistance.</p>
     </div>
-    <div class="ms-auto d-flex gap-3 align-items-center flex-wrap">
-      <button class="btn btn-action btn-expand" data-bs-toggle="modal" data-bs-target="#newFolderModal">
-        <i class="bi bi-folder-plus me-1"></i>New Folder
+    <div class="d-flex gap-2">
+      <button class="btn btn-gradient btn-sm px-3" data-bs-toggle="modal" data-bs-target="#newFolderModal">
+        <i class="bi bi-folder-plus me-1"></i> New Folder
       </button>
-      <div class="search-wrap" style="min-width:260px;">
-        <i class="bi bi-search"></i>
-        <input type="text" id="searchInput" class="form-control search-input"
-               placeholder="Search files…" oninput="filterFiles()"/>
+      <div class="input-group input-group-sm" style="max-width: 250px;">
+        <span class="input-group-text bg-dark border-0 text-muted"><i class="bi bi-search"></i></span>
+        <input type="text" id="searchInput" class="form-control form-control-premium border-0" placeholder="Search files..." oninput="filterFiles()">
       </div>
     </div>
   </div>
 
-  <div class="files-table-wrap">
-    <div style="overflow-x:auto;">
-      <table class="files-table" id="filesTable">
+  <!-- ── Files Table ── -->
+  <div class="files-table-container">
+    <div class="table-responsive">
+      <table class="table table-dark table-hover files-table-premium mb-0">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Type / Latest Ver.</th>
-            <th>Last Modified</th>
-            <th>Info / Versions</th>
-            <th>Actions</th>
+            <th style="width: 40%">Name</th>
+            <th style="width: 15%">Latest Ver.</th>
+            <th style="width: 20%">Last Modified</th>
+            <th style="width: 25%">Actions</th>
           </tr>
         </thead>
         <tbody id="filesBody">
-          <!-- Folders first -->
+          <!-- Subfolders -->
           {% for folder in subfolders %}
-          <tr class="folder-row" data-name="{{ folder.name|lower }}">
+          <tr data-name="{{ folder.name|lower }}">
             <td>
-              <a href="{{ url_for('files', folder_id=folder.id) }}" class="folder-link">
-                <div class="folder-icon-bg">
+              <a href="{{ url_for('files', folder_id=folder.id) }}" class="text-decoration-none d-flex align-items-center">
+                <div class="file-icon-premium folder-icon-premium me-3">
                   <i class="bi bi-folder-fill"></i>
                 </div>
-                <div class="file-name-text">
-                  {{ folder.name }}
-                </div>
+                <span class="fw-bold text-main">{{ folder.name }}</span>
               </a>
             </td>
-            <td><span class="badge-version" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa; border-color: rgba(139, 92, 246, 0.25);">Folder</span></td>
-            <td><span class="date-text"><i class="bi bi-calendar3 me-1"></i>{{ folder.created_at }}</span></td>
-            <td>-</td>
+            <td><span class="text-muted small">Folder</span></td>
+            <td><span class="text-muted small">{{ folder.created_at }}</span></td>
             <td>
-              <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-action btn-expand" title="Rename Folder"
-                        data-folder-id="{{ folder.id }}" data-folder-name="{{ folder.name }}"
-                        onclick="openRenameModal(this.dataset.folderId, this.dataset.folderName)">
-                  <i class="bi bi-pencil"></i>
+              <div class="d-flex gap-2">
+                <button class="btn btn-action-premium btn-ver-premium" title="Rename"
+                        onclick="openRenameModal('{{ folder.id }}', '{{ folder.name }}')">
+                  <i class="bi bi-pencil-square"></i>
                 </button>
-                <form action="{{ url_for('delete_folder', folder_id=folder.id) }}" method="POST" onsubmit="return confirm('Delete this folder? (Only empty folders can be deleted)')">
-                  <button type="submit" class="btn btn-action btn-del" title="Delete Folder">
-                    <i class="bi bi-trash3"></i>
+                <form action="{{ url_for('delete_folder', folder_id=folder.id) }}" method="POST" onsubmit="return confirm('Delete this folder?')">
+                  <button type="submit" class="btn btn-action-premium btn-del-premium" title="Delete">
+                    <i class="bi bi-trash3-fill"></i>
                   </button>
                 </form>
               </div>
@@ -345,92 +284,88 @@
           </tr>
           {% endfor %}
 
+          <!-- Files -->
           {% if summary %}
-          {% for row in summary %}
-          {% set fname = row.original_name %}
-          {% set versions = versions_map.get(fname, []) %}
-          {% set latest_v = versions[0] if versions else None %}
-
-          <!-- ── Summary row ── -->
-          <tr class="file-row" data-name="{{ fname|lower }}">
-            <td>
-              <div class="file-name-cell">
-                <div class="file-icon-bg">
-                  <i class="bi bi-file-earmark-fill"></i>
-                </div>
-                <div class="file-name-text">
-                  {{ fname }}
-                  <small>{{ versions|length }} version{{ 's' if versions|length > 1 else '' }}</small>
-                </div>
-              </div>
-            </td>
-            <td><span class="badge-version">v{{ row.latest_version }}</span></td>
-            <td><span class="date-text"><i class="bi bi-calendar3 me-1"></i>{{ row.last_modified }}</span></td>
-            <td><span class="badge-count">{{ row.total_versions }}</span></td>
-            <td>
-              <div class="d-flex gap-2 flex-wrap">
-                {% if latest_v %}
-                <a href="{{ url_for('download', file_id=latest_v.id) }}"
-                   class="btn btn-action btn-dl" title="Download latest version">
-                  <i class="bi bi-cloud-download me-1"></i>Download
-                </a>
-                {% endif %}
-                <button class="btn btn-action btn-expand"
-                        onclick="toggleVersions('versions-{{ loop.index }}')"
-                        id="btn-{{ loop.index }}">
-                  <i class="bi bi-layers me-1"></i>Versions
-                </button>
-              </div>
-            </td>
-          </tr>
-
-          <!-- ── Version history row (hidden by default) ── -->
-          <tr class="versions-row" id="versions-{{ loop.index }}">
-            <td colspan="5">
-              <div class="versions-panel">
-                <div class="vtitle">
-                  <i class="bi bi-clock-history me-1"></i>
-                  Version History for "{{ fname }}"
-                </div>
-
-                {% for v in versions %}
-                <div class="version-item">
-                  <span class="vnum">v{{ v.version }}</span>
-                  <span class="vdate">
-                    <i class="bi bi-calendar3 me-1"></i>{{ v.timestamp }}
-                  </span>
-                  <div class="vactions">
-                    <!-- Download -->
-                    <a href="{{ url_for('download', file_id=v.id) }}"
-                       class="btn btn-action btn-dl">
-                      <i class="bi bi-cloud-download me-1"></i>Download
-                    </a>
-
-                    <!-- Restore (only if not the latest version) -->
-                    {% if v.version != row.latest_version %}
-                    <a href="javascript:void(0)" 
-                       class="btn btn-action btn-restore"
-                       onclick="if(confirm('Restore version {{ v.version }} of this file?')) document.getElementById('restore-form-{{ v.id }}').submit();">
-                      <i class="bi bi-arrow-counterclockwise me-1"></i>Restore
-                    </a>
-                    <form id="restore-form-{{ v.id }}" method="POST" action="{{ url_for('restore', file_id=v.id) }}" style="display:none;"></form>
-                    {% endif %}
-
-                    <!-- Delete -->
-                    <a href="javascript:void(0)" 
-                       class="btn btn-action btn-del"
-                       onclick="if(confirm('Delete version {{ v.version }}? This cannot be undone.')) document.getElementById('delete-form-{{ v.id }}').submit();">
-                      <i class="bi bi-trash3 me-1"></i>Delete
-                    </a>
-                    <form id="delete-form-{{ v.id }}" method="POST" action="{{ url_for('delete', file_id=v.id) }}" style="display:none;"></form>
+            {% for row in summary %}
+            {% set versions = versions_map.get(row.original_name, []) %}
+            {% set latest_id = versions[0].id if versions else 0 %}
+            <tr data-name="{{ row.original_name|lower }}" 
+                ondblclick="openPreview('{{ latest_id }}', '{{ row.original_name }}')"
+                style="cursor: pointer;">
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="file-icon-premium me-3">
+                    <i class="bi bi-file-earmark-fill"></i>
+                  </div>
+                  <div class="d-flex flex-column">
+                    <span class="fw-bold text-main">{{ row.original_name }}</span>
+                    <span class="text-muted smaller" style="font-size: 0.75rem">{{ row.total_versions }} version{{ 's' if row.total_versions > 1 else '' }}</span>
                   </div>
                 </div>
-                {% endfor %}
-
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
+              </td>
+              <td><span class="badge-premium-v">v{{ row.latest_version }}</span></td>
+              <td><span class="text-muted small">{{ row.last_modified }}</span></td>
+              <td>
+                <div class="d-flex gap-2 align-items-center">
+                  {% if versions %}
+                  <button class="btn btn-sm star-btn p-1 me-1" data-file-id="{{ latest_id }}" title="{% if row.is_starred %}Unstar{% else %}Star{% endif %}">
+                    <i class="bi {% if row.is_starred %}bi-star-fill text-warning glowing-star{% else %}bi-star text-muted{% endif %} fs-5"></i>
+                  </button>
+                  <button class="btn btn-action-premium btn-preview-premium" 
+                          onclick="openPreview('{{ latest_id }}', '{{ row.original_name }}')" title="Preview">
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
+                  <a href="{{ url_for('download', file_id=latest_id) }}" class="btn btn-action-premium btn-dl-premium">
+                    <i class="bi bi-download"></i>
+                  </a>
+                  {% endif %}
+                  <button class="btn btn-action-premium btn-ver-premium" onclick="toggleVersions('vrow-{{ loop.index }}', this)">
+                    <i class="bi bi-layers-fill"></i> History
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <!-- Version History Row -->
+            <tr id="vrow-{{ loop.index }}" class="d-none">
+              <td colspan="4" class="p-0 border-0">
+                <div class="version-panel-premium mx-3">
+                  <div class="small fw-bold text-muted mb-3"><i class="bi bi-clock-history me-2"></i>VERSION HISTORY</div>
+                  {% for v in versions %}
+                  <div class="version-item-premium">
+                    <div class="d-flex align-items-center gap-3">
+                      <span class="badge-premium-v">v{{ v.version }}</span>
+                      <span class="text-muted small">{{ v.timestamp }}</span>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                      <button class="btn btn-sm star-btn p-1" data-file-id="{{ v.id }}" title="{% if v.is_starred %}Unstar{% else %}Star{% endif %}">
+                        <i class="bi {% if v.is_starred %}bi-star-fill text-warning glowing-star{% else %}bi-star text-muted{% endif %}"></i>
+                      </button>
+                      <button class="btn btn-action-premium btn-preview-premium py-1 px-2" 
+                              onclick="openPreview('{{ v.id }}', '{{ row.original_name }}')" title="Preview">
+                        <i class="bi bi-eye-fill"></i>
+                      </button>
+                      <a href="{{ url_for('download', file_id=v.id) }}" class="btn btn-action-premium btn-dl-premium py-1 px-2" title="Download">
+                        <i class="bi bi-download"></i>
+                      </a>
+                      {% if v.version != row.latest_version %}
+                      <form method="POST" action="{{ url_for('restore', file_id=v.id) }}" onsubmit="return confirm('Restore this version?')">
+                        <button type="submit" class="btn btn-action-premium btn-ver-premium py-1 px-2" title="Restore">
+                          <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                      </form>
+                      {% endif %}
+                      <form method="POST" action="{{ url_for('delete', file_id=v.id) }}" onsubmit="return confirm('Move this version to Trash?')">
+                        <button type="submit" class="btn btn-action-premium btn-del-premium py-1 px-2" title="Delete">
+                          <i class="bi bi-trash3-fill"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
           {% endif %}
         </tbody>
       </table>
@@ -438,116 +373,100 @@
   </div>
 
   {% if not summary and not subfolders %}
-  <div class="files-table-wrap mt-4">
-    <div class="empty-state">
-      <i class="bi bi-inbox text-primary"></i>
-      <h3 style="color:#94a3b8;font-size:1.1rem;font-weight:700;">Folder is empty</h3>
-      <p style="color:#64748b;font-size:0.9rem;">Upload files or create subfolders to get started.</p>
-      <a href="{{ url_for('dashboard') }}" class="btn btn-action btn-dl mt-2">
-        <i class="bi bi-cloud-upload me-1"></i>Upload a File
-      </a>
-    </div>
+  <div class="text-center py-5 glass-panel mt-4">
+    <i class="bi bi-cloud-slash text-muted display-1 mb-3 d-block"></i>
+    <h4 class="font-outfit fw-bold">Empty Folder</h4>
+    <p class="text-muted">No files or subfolders found here.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-gradient mt-3">Upload First File</a>
   </div>
   {% endif %}
-
 </div>
 
-<!-- New Folder Modal -->
-<div class="modal fade" id="newFolderModal" tabindex="-1" aria-hidden="true">
+<!-- Modals -->
+<div class="modal fade" id="newFolderModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content modal-content-custom">
-      <div class="modal-header modal-header-custom">
-        <h5 class="modal-title"><i class="bi bi-folder-plus me-2 text-primary"></i>Create New Folder</h5>
+    <div class="modal-content modal-content-premium">
+      <div class="modal-header modal-header-premium">
+        <h5 class="modal-title font-outfit fw-bold"><i class="bi bi-folder-plus text-primary me-2"></i>Create New Folder</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <form action="{{ url_for('create_folder') }}" method="POST">
-        <div class="modal-body modal-body-custom">
-          <input type="hidden" name="parent_id" value="{{ current_folder_id or '' }}">
-          <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">FOLDER NAME</label>
-            <input type="text" name="name" class="form-control form-control-custom" placeholder="Enter folder name..." required autofocus>
-          </div>
+        <input type="hidden" name="parent_id" value="{{ current_folder_id or '' }}">
+        <div class="modal-body p-4">
+          <label class="text-muted small fw-bold mb-2">FOLDER NAME</label>
+          <input type="text" name="name" class="form-control form-control-premium" placeholder="e.g. Project Documents" required autofocus>
         </div>
-        <div class="modal-footer modal-footer-custom">
-          <button type="button" class="btn btn-action btn-expand" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-action btn-dl">Create Folder</button>
+        <div class="modal-footer modal-footer-premium">
+          <button type="button" class="btn btn-outline-premium" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-gradient px-4">Create Folder</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- Rename Folder Modal -->
-<div class="modal fade" id="renameFolderModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="renameFolderModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content modal-content-custom">
-      <div class="modal-header modal-header-custom">
-        <h5 class="modal-title"><i class="bi bi-pencil me-2 text-primary"></i>Rename Folder</h5>
+    <div class="modal-content modal-content-premium">
+      <div class="modal-header modal-header-premium">
+        <h5 class="modal-title font-outfit fw-bold"><i class="bi bi-pencil-square text-primary me-2"></i>Rename Folder</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <form id="renameFolderForm" method="POST">
-        <div class="modal-body modal-body-custom">
-          <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">NEW FOLDER NAME</label>
-            <input type="text" id="renameFolderName" name="name" class="form-control form-control-custom" required autofocus>
-          </div>
+        <div class="modal-body p-4">
+          <label class="text-muted small fw-bold mb-2">NEW NAME</label>
+          <input type="text" id="renameFolderName" name="name" class="form-control form-control-premium" required autofocus>
         </div>
-        <div class="modal-footer modal-footer-custom">
-          <button type="button" class="btn btn-action btn-expand" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-action btn-dl">Save Changes</button>
+        <div class="modal-footer modal-footer-premium">
+          <button type="button" class="btn btn-outline-premium" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-gradient px-4">Save Changes</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
+<!-- File Preview Modal -->
+<div class="modal fade modal-preview-premium" id="previewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <div class="d-flex align-items-center">
+          <div class="file-icon-premium me-3" id="previewIcon">
+            <i class="bi bi-file-earmark-fill"></i>
+          </div>
+          <div>
+            <h5 class="modal-title font-outfit fw-bold text-white mb-0" id="previewTitle">File Preview</h5>
+            <small class="text-muted" id="previewMeta">Loading metadata...</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="preview-container-premium" id="previewContainer">
+          <div class="preview-loading" id="previewLoading">
+            <div class="spinner-border text-primary" role="status"></div>
+          </div>
+          <div id="previewContent" class="w-100 h-100 d-flex align-items-center justify-content-center">
+            <!-- Dynamic content here -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <a href="#" id="previewDownloadBtn" class="btn btn-gradient btn-sm px-4">
+          <i class="bi bi-download me-2"></i>Download File
+        </a>
+        <button type="button" class="btn btn-outline-premium btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
-<script>
-  /* ── Toggle version history panel ── */
-  function toggleVersions(id) {
-    const panel = document.getElementById(id);
-    panel.classList.toggle('show');
-    // Toggle button icon
-    const idx = id.split('-')[1];
-    const btn = document.getElementById('btn-' + idx);
-    if (panel.classList.contains('show')) {
-      btn.innerHTML = '<i class="bi bi-chevron-up me-1"></i>Hide';
-    } else {
-      btn.innerHTML = '<i class="bi bi-layers me-1"></i>Versions';
-    }
-  }
-
-  /* ── Search / filter ── */
-  function filterFiles() {
-    const q    = document.getElementById('searchInput').value.toLowerCase().trim();
-    const rows = document.querySelectorAll('#filesBody tr');
-    rows.forEach(row => {
-      const name = row.getAttribute('data-name') || '';
-      const show = !q || name.includes(q);
-      row.style.display = show ? '' : 'none';
-      
-      // Also handle version panels if it's a file summary row
-      if (row.classList.contains('file-row')) {
-        const nextRow = row.nextElementSibling;
-        if (nextRow && nextRow.classList.contains('versions-row')) {
-          if (!show) nextRow.classList.remove('show');
-          nextRow.style.display = show ? '' : 'none';
-        }
-      }
-    });
-  }
-
-  /* ── Folder Rename Modal ── */
-  function openRenameModal(id, currentName) {
-    const form = document.getElementById('renameFolderForm');
-    const input = document.getElementById('renameFolderName');
-    form.action = `/rename_folder/${id}`;
-    input.value = currentName;
-    const modal = new bootstrap.Modal(document.getElementById('renameFolderModal'));
-    modal.show();
-  }
-</script>
+<script src="{{ url_for('static', filename='js/files.js') }}"></script>
+<script src="{{ url_for('static', filename='js/starred.js') }}"></script>
 {% endblock %}
+
+

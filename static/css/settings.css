@@ -1,0 +1,136 @@
+/* Settings Dashboard Styles */
+.settings-container {
+    padding-bottom: 5rem;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.settings-header {
+    margin-bottom: 2.5rem;
+}
+
+.settings-card {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 2rem;
+    height: 100%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings-card:hover {
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.settings-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: var(--accent-blue);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.settings-card:hover .settings-icon-wrapper {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+    transform: rotate(-5deg) scale(1.1);
+}
+
+.settings-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1.5rem;
+}
+
+.settings-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.settings-info-item:last-child {
+    border-bottom: none;
+}
+
+.settings-label {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+}
+
+.settings-value {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Modern Toggles */
+.form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.badge-google {
+    background: rgba(66, 133, 244, 0.1);
+    color: #4285F4;
+    border: 1px solid rgba(66, 133, 244, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Modal Styles */
+.modal-content.glass-panel {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+#avatarPreviewContainer {
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#avatarPreviewContainer:hover {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: none;
+    color: white;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .settings-card {
+        padding: 1.5rem;
+    }
+}

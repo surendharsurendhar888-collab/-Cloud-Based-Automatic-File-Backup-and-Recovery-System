@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Storage Analytics - CloudProtect AI{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js v4 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1">Storage Analytics</h2>
+            <p class="text-muted small mb-0">Deep dive into your cloud storage usage and trends</p>
+        </div>
+    </div>
+
+    <!-- Summary Stats Row -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-3">
+            <div class="glass-panel p-4 h-100 text-center border-0" style="background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(15, 23, 42, 0.5))">
+                <h6 class="text-muted small fw-bold mb-3">TOTAL STORAGE</h6>
+                <h3 class="text-white fw-bold mb-1 animated-counter" data-value="{{ stats.total_size }}">
+                    {% if stats.total_size >= 1024 * 1024 %}
+                        {{ (stats.total_size / (1024 * 1024)) | round(2) }} MB
+                    {% elif stats.total_size >= 1024 %}
+                        {{ (stats.total_size / 1024) | round(2) }} KB
+                    {% else %}
+                        {{ stats.total_size }} B
+                    {% endif %}
+                </h3>
+                <div class="progress mt-3 bg-dark" style="height: 6px;">
+                    <div class="progress-bar bg-primary" id="storageUsageBar" role="progressbar" data-usage-pct="{{ stats.usage_pct }}"></div>
+                </div>
+                <small class="text-muted d-block mt-2">of 100 MB free quota</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-panel p-4 h-100 text-center border-0" style="background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(15, 23, 42, 0.5))">
+                <h6 class="text-muted small fw-bold mb-3">TOTAL FILES</h6>
+                <h3 class="text-white fw-bold mb-1">{{ total_versions }}</h3>
+                <small class="text-muted">{{ unique_files }} unique files</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-panel p-4 h-100 text-center border-0" style="background: linear-gradient(145deg, rgba(6, 182, 212, 0.1), rgba(15, 23, 42, 0.5))">
+                <h6 class="text-muted small fw-bold mb-3">FOLDERS</h6>
+                <h3 class="text-white fw-bold mb-1">{{ folders }}</h3>
+                <small class="text-muted">Total hierarchy nodes</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="glass-panel p-4 h-100 text-center border-0" style="background: linear-gradient(145deg, rgba(236, 72, 153, 0.1), rgba(15, 23, 42, 0.5))">
+                <h6 class="text-muted small fw-bold mb-3">PREVIEWS</h6>
+                <h3 class="text-white fw-bold mb-1">{{ previews }}</h3>
+                <small class="text-muted">In-app file views</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Chart 1: File Types -->
+        <div class="col-lg-4">
+            <div class="glass-panel p-4 h-100">
+                <h5 class="text-white mb-4">File Distribution</h5>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="typeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Upload Trends -->
+        <div class="col-lg-8">
+            <div class="glass-panel p-4 h-100">
+                <h5 class="text-white mb-4">Upload Activity (Last 7 Days)</h5>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deduplication Widget -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="glass-panel p-4 border-0" style="background: linear-gradient(90deg, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%)">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                            <i class="bi bi-shield-check text-primary fs-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="text-white mb-1">AI Deduplication Shield</h5>
+                            <p class="text-muted small mb-0">Our SHA-256 algorithm prevents redundant storage of identical file content.</p>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <h4 class="text-success fw-bold mb-0">
+                            {% set saved = total_versions - unique_files %}
+                            {{ saved }}
+                        </h4>
+                        <small class="text-muted">Redundant uploads blocked</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Data for Chart.js -->
+<script id="analytics-config" type="application/json">
+{
+    "typesCount": {
+        "Images": {{ stats.types_count.Images }},
+        "Videos": {{ stats.types_count.Videos }},
+        "Documents": {{ stats.types_count.Documents }},
+        "Others": {{ stats.types_count.Others }}
+    },
+    "trendData": {{ trend_data | tojson | safe }}
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Parse data from script tag
+    const configData = JSON.parse(document.getElementById('analytics-config').textContent);
+    const typesCount = configData.typesCount;
+    const trendData = configData.trendData;
+
+    // File Type Chart
+    const typeCtx = document.getElementById('typeChart').getContext('2d');
+    new Chart(typeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Images', 'Videos', 'Documents', 'Others'],
+            datasets: [{
+                data: [
+                    typesCount.Images, 
+                    typesCount.Videos, 
+                    typesCount.Documents, 
+                    typesCount.Others
+                ],
+                backgroundColor: [
+                    '#3b82f6', '#8b5cf6', '#ec4899', '#64748b'
+                ],
+                borderWidth: 0,
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: '#94a3b8', padding: 20, font: { size: 12 } }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // Upload Trend Chart
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    const labels = Object.keys(trendData).sort();
+    const values = labels.map(l => trendData[l]);
+
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Uploads',
+                data: values,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#3b82f6',
+                pointBorderWidth: 2,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                    ticks: { color: '#94a3b8', stepSize: 1 }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+    // Set storage usage bar width (avoiding CSS linter errors in HTML)
+    const usageBar = document.getElementById('storageUsageBar');
+    if (usageBar) {
+        usageBar.style.width = usageBar.getAttribute('data-usage-pct') + '%';
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Activity Timeline - CloudProtect AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1">Activity Timeline</h2>
+            <p class="text-muted small mb-0">Track all events and actions on your account</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="glass-panel p-4 shadow-lg">
+                {% if activities %}
+                <div class="timeline">
+                    {% for act in activities %}
+                    <div class="timeline-item mb-4 position-relative ps-5 pb-3 border-start border-secondary-subtle">
+                        <div class="timeline-icon position-absolute start-0 translate-middle-x bg-deep rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; margin-left: -1px; border: 2px solid var(--accent-blue);">
+                            <i class="bi {% if act.action == 'upload' %}bi-cloud-upload text-success{% elif act.action == 'preview' %}bi-eye text-info{% elif act.action == 'download' %}bi-download text-primary{% elif act.action == 'restore' %}bi-arrow-counterclockwise text-warning{% elif act.action == 'delete' %}bi-trash text-danger{% elif act.action == 'login' %}bi-box-arrow-in-right text-light{% else %}bi-info-circle text-secondary{% endif %}"></i>
+                        </div>
+                        <div class="timeline-content ps-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="text-white fw-bold mb-1">
+                                        {% if act.action == 'upload' %}
+                                        Uploaded <span class="text-gradient-blue">{{ act.file_name }}</span>
+                                        {% elif act.action == 'preview' %}
+                                        Previewed <span class="text-info">{{ act.file_name }}</span>
+                                        {% elif act.action == 'download' %}
+                                        Downloaded <span class="text-primary">{{ act.file_name }}</span>
+                                        {% elif act.action == 'restore' %}
+                                        Restored version {{ act.version }} of <span class="text-warning">{{ act.file_name }}</span>
+                                        {% elif act.action == 'delete' %}
+                                        Moved <span class="text-danger">{{ act.file_name }}</span> to Trash
+                                        {% elif act.action == 'login' %}
+                                        Logged in to system
+                                        {% else %}
+                                        {{ act.action | capitalize }} {{ act.file_name or '' }}
+                                        {% endif %}
+                                    </h6>
+                                    <p class="text-muted small mb-0">
+                                        {% if act.version %}Version {{ act.version }} • {% endif %}
+                                        {{ act.timestamp }}
+                                    </p>
+                                </div>
+                                <span class="badge bg-glass text-muted small px-3 py-2 rounded-pill">
+                                    {{ act.timestamp.split(' ')[0] }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-activity fs-1 text-muted opacity-25"></i>
+                    </div>
+                    <h5 class="text-white opacity-50">No activity recorded yet</h5>
+                    <p class="text-muted small">Your interactions with files and account will be logged here.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline-item:last-child {
+    border-left-color: transparent !important;
+}
+.bg-glass {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.bg-deep {
+    background: var(--bg-deep);
+}
+</style>
+{% endblock %}

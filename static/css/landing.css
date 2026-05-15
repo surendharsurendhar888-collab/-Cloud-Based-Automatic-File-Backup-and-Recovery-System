@@ -1,0 +1,212 @@
+/* ── Premium Landing Page Styles ── */
+
+/* ── Hero Section ── */
+.hero-section {
+    position: relative;
+    padding: 160px 0 100px;
+    background: radial-gradient(circle at 50% -20%, rgba(59, 130, 246, 0.15), transparent 70%);
+    overflow: hidden;
+}
+
+.hero-headline {
+    font-size: 4.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+}
+
+.hero-subheading {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.6;
+}
+
+/* ── Animated Blobs ── */
+.blob {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: var(--primary-gradient);
+    filter: blur(80px);
+    opacity: 0.15;
+    z-index: -1;
+    border-radius: 50%;
+    animation: move 20s infinite alternate;
+}
+
+.blob-1 { top: -100px; left: -100px; background: var(--accent-blue); }
+.blob-2 { bottom: -100px; right: -100px; background: var(--accent-purple); animation-delay: -5s; }
+.blob-3 { top: 40%; left: 30%; width: 300px; height: 300px; background: var(--accent-cyan); animation-delay: -10s; }
+
+@keyframes move {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+/* ── Hero Visuals ── */
+.hero-visual-container {
+    perspective: 1000px;
+    margin-top: 60px;
+}
+
+.floating-dashboard {
+    transform: rotateX(15deg) rotateY(-5deg);
+    transition: transform 0.5s ease;
+    box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+    border: 1px solid var(--glass-border);
+}
+
+.floating-dashboard:hover {
+    transform: rotateX(5deg) rotateY(0deg) scale(1.02);
+}
+
+.hero-card {
+    position: absolute;
+    z-index: 10;
+    animation: float 4s infinite ease-in-out;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* ── Glassmorphism Cards ── */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.glass-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.feature-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-blue);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Timeline ── */
+.timeline-container {
+    position: relative;
+    padding: 40px 0;
+}
+
+.timeline-step {
+    position: relative;
+    z-index: 1;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin: 0 auto 15px;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+/* ── Stats ── */
+.stat-item h3 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ── Animations ── */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── AI Assistant Preview ── */
+.ai-preview-chat {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.chat-bubble {
+    padding: 12px 20px;
+    border-radius: 18px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.chat-ai {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    color: var(--text-main);
+    border-bottom-left-radius: 4px;
+}
+
+.chat-user {
+    background: var(--accent-purple);
+    color: white;
+    border-bottom-right-radius: 4px;
+    text-align: right;
+    margin-left: auto;
+}
+
+/* ── Footer ── */
+.footer-premium {
+    background: #0d1117;
+    border-top: 1px solid var(--glass-border);
+    padding: 80px 0 40px;
+}
+
+.footer-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.footer-link:hover {
+    color: var(--accent-blue);
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+    .hero-headline {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-headline {
+        font-size: 2.5rem;
+    }
+}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Starred Files - CloudProtect AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-white mb-1">Starred Files</h2>
+            <p class="text-muted small mb-0">Your favorite and most important files</p>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4" id="starred-files-grid">
+        {% if starred_files %}
+            {% for file in starred_files %}
+            <div class="col file-card-col" data-file-id="{{ file.id }}">
+                <div class="glass-panel p-3 h-100 position-relative transition-transform hover-lift">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="file-icon-large">
+                            {% set ext = file.original_name.split('.')[-1].lower() if '.' in file.original_name else '' %}
+                            <i class="bi {% if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp'] %}bi-file-earmark-image text-info{% elif ext == 'pdf' %}bi-file-earmark-pdf text-danger{% elif ext in ['mp4', 'mov', 'avi'] %}bi-file-earmark-play text-warning{% elif ext in ['zip', 'rar', '7z'] %}bi-file-earmark-zip text-secondary{% else %}bi-file-earmark-text text-primary{% endif %} fs-1"></i>
+                        </div>
+                        <button class="btn btn-sm star-btn p-0" data-file-id="{{ file.id }}" title="Unstar">
+                            <i class="bi bi-star-fill text-warning fs-4 glowing-star"></i>
+                        </button>
+                    </div>
+                    <div class="file-info">
+                        <h6 class="text-white text-truncate mb-1" title="{{ file.original_name }}">{{ file.original_name }}</h6>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">v{{ file.version }}</small>
+                            <small class="text-muted">{{ file.timestamp.split(' ')[0] }}</small>
+                        </div>
+                    </div>
+                    <div class="mt-3 d-flex gap-2">
+                        <a href="{{ url_for('preview', file_id=file.id) }}" target="_blank" class="btn btn-sm btn-outline-premium flex-grow-1 py-1">
+                            Preview
+                        </a>
+                        <a href="{{ url_for('download', file_id=file.id) }}" class="btn btn-sm btn-gradient py-1">
+                            <i class="bi bi-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <div class="mb-4">
+                    <i class="bi bi-star fs-1 text-muted opacity-25"></i>
+                </div>
+                <h5 class="text-white opacity-50">No starred files yet</h5>
+                <p class="text-muted small">Star important files to see them here.</p>
+                <a href="{{ url_for('files') }}" class="btn btn-outline-premium mt-3">Go to My Files</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/starred.js') }}"></script>
+{% endblock %}

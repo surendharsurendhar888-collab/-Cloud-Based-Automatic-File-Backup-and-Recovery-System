@@ -2,421 +2,237 @@
 
 {% block extra_head %}
 <style>
-  /* ── Dashboard Cards ── */
+  /* ── Dashboard Premium Overrides ── */
   .stat-card {
-    background: var(--card-bg);
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 24px;
     padding: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   }
   .stat-icon {
     width: 60px;
     height: 60px;
-    border-radius: 12px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
   }
   .stat-icon.blue {
-    background: rgba(78, 143, 255, 0.15);
-    color: var(--primary);
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-blue);
   }
   .stat-icon.green {
-    background: rgba(0, 196, 140, 0.15);
-    color: var(--success);
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--accent-cyan);
   }
   .stat-value {
     font-size: 2rem;
-    font-weight: 700;
+    font-weight: 800;
+    font-family: 'Outfit', sans-serif;
     line-height: 1;
     margin-bottom: 0.25rem;
   }
   .stat-label {
     color: var(--text-muted);
     font-size: 0.85rem;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   /* ── Section Titles ── */
-  .section-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 1rem;
+  .section-title-premium {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
+  }
+  .section-title-premium i {
+    color: var(--accent-blue);
   }
 
-  /* ── Drag & Drop Upload ── */
-  .upload-box {
-    background: var(--card-bg);
-    border: 2px dashed rgba(78, 143, 255, 0.3);
-    border-radius: var(--radius);
+  /* ── Premium Upload Box ── */
+  .upload-box-premium {
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed var(--glass-border);
+    border-radius: 24px;
     padding: 3rem 2rem;
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
-    min-height: 250px;
+    min-height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(10px);
   }
-  .upload-box:hover, .upload-box.dragover {
-    background: rgba(78, 143, 255, 0.05);
-    border-color: var(--primary);
+  .upload-box-premium:hover, .upload-box-premium.dragover {
+    border-color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.05);
+    transform: scale(1.01);
   }
-  .upload-icon {
-    font-size: 3rem;
-    color: var(--primary);
-    margin-bottom: 1rem;
+  .upload-icon-premium {
+    font-size: 3.5rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1.5rem;
   }
-  .upload-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-  }
-  .upload-subtitle {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-  .upload-link {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 500;
-  }
-  .upload-link:hover { text-decoration: underline; }
-
-  /* ── Progress Bar ── */
-  .progress-container {
-    margin-top: 1rem;
-  }
-  .progress {
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 4px;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .progress-bar {
-    background: var(--danger); /* Using red to match the screenshot */
-  }
-  .progress-text {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    display: flex;
-    justify-content: space-between;
-  }
-  .status-text {
-    font-size: 0.8rem;
-    color: var(--danger);
-    text-align: center;
-  }
-
-  /* ── Table ── */
-  .table-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0;
-    overflow: hidden;
-  }
-  .table-custom {
-    margin-bottom: 0;
-    color: var(--text);
-  }
-  .table-custom th {
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 1.5rem;
-  }
-  .table-custom td {
-    background: transparent;
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 1.5rem;
-    vertical-align: middle;
-    font-size: 0.9rem;
-  }
-  .table-custom tr:last-child td { border-bottom: none; }
-  .table-custom tbody tr:hover { background: rgba(255,255,255,0.02); }
   
-  .file-name { font-weight: 500; display: flex; align-items: center; gap: 0.75rem; }
-  .file-name i { color: var(--primary); font-size: 1.1rem; }
-  .badge-version {
-    background: rgba(78, 143, 255, 0.15);
-    color: var(--primary);
-    padding: 0.35em 0.65em;
-    border-radius: 6px;
-    font-weight: 600;
+  .form-control-premium {
+    background: var(--bg-deep) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+    border-radius: 12px !important;
+    padding: 0.75rem 1rem !important;
   }
-  .date-text { color: var(--text-muted); font-size: 0.85rem; }
-
-  .form-control-custom {
-    background: #0f172a !important;
-    border: 1px solid rgba(255,255,255,0.15) !important;
-    color: #e2e8f0 !important;
-    border-radius: 10px !important;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .form-control-custom:focus {
-    border-color: #4e8fff !important;
-    box-shadow: 0 0 0 3px rgba(78,143,255,0.15) !important;
-    outline: none !important;
-  }
-  /* Force option elements to inherit dark styling */
-  .form-control-custom option,
-  select option {
-    background: #0f172a;
-    color: #e2e8f0;
-  }
-  .folder-select-label {
-    color: #93c5fd !important;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 0.4rem;
-    display: block;
+  .form-control-premium:focus {
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
   }
 
-  /* ── Floating Chatbot Sidebar ── */
-  #aiSidebar {
-    position: fixed;
-    top: 80px;
-    right: -400px; /* Hidden by default */
-    width: 380px;
-    height: calc(100vh - 100px);
-    background: rgba(22, 33, 62, 0.95);
-    backdrop-filter: blur(16px);
-    border: 1px solid var(--border);
-    border-radius: var(--radius) 0 0 var(--radius);
-    box-shadow: -5px 0 30px rgba(0,0,0,0.5);
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1050;
-    display: flex;
-    flex-direction: column;
-  }
-  #aiSidebar.open {
-    right: 0;
-  }
-
-  /* Toggle Button */
-  #aiToggleBtn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4e8fff, #8B5CF6);
-    color: white;
-    border: none;
-    box-shadow: 0 4px 15px rgba(78, 143, 255, 0.4);
-    cursor: pointer;
-    z-index: 1051;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  #aiToggleBtn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(78, 143, 255, 0.6);
-  }
-  #aiToggleBtn i {
-    font-size: 1.5rem;
-  }
-
-  /* Chat Header */
-  .chat-header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(0,0,0,0.2);
-    border-radius: var(--radius) 0 0 0;
-  }
-  .chat-header-title {
-    font-weight: 600;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .chat-header-title i { color: #00c48c; }
-  .btn-close-chat {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 1.2rem;
-  }
-  .btn-close-chat:hover { color: var(--text); }
-
-  /* Chat Body */
-  .chat-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  /* Chat Bubbles */
-  .chat-bubble {
-    max-width: 85%;
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    word-wrap: break-word;
-  }
-  .chat-user {
-    align-self: flex-end;
-    background: var(--primary);
-    color: white;
-    border-bottom-right-radius: 2px;
-  }
-  .chat-ai {
-    align-self: flex-start;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    border-bottom-left-radius: 2px;
-  }
-
-  /* Typing animation */
-  .typing-indicator {
-    display: flex;
-    gap: 4px;
-    padding: 0.5rem 1rem;
-    align-self: flex-start;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    border-bottom-left-radius: 2px;
-  }
-  .typing-dot {
-    width: 6px; height: 6px;
-    background: var(--text-muted);
-    border-radius: 50%;
-    animation: bounce 1.4s infinite ease-in-out both;
-  }
-  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-  @keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); background: var(--primary); }
-  }
-
-  /* Chat Input */
-  .chat-input-area {
-    padding: 1rem;
-    border-top: 1px solid var(--border);
-    background: rgba(0,0,0,0.2);
-  }
-  .chat-input-wrapper {
-    display: flex;
-    gap: 0.5rem;
-    background: rgba(0,0,0,0.3);
+  /* ── Premium Table ── */
+  .table-premium {
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 24px;
-    padding: 0.25rem 0.25rem 0.25rem 1rem;
+    overflow: hidden;
   }
-  .chat-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-size: 0.9rem;
-    padding: 0.5rem 0;
-    outline: none;
+  .table-premium th {
+    background: rgba(255,255,255,0.02);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
   }
-  .chat-input::placeholder { color: var(--text-muted); }
-  .btn-send {
-    background: var(--primary);
+  .table-premium td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .table-premium tr:last-child td { border-bottom: none; }
+  .table-premium tr:hover { background: rgba(255,255,255,0.01); }
+
+  .badge-premium-v {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-blue);
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  /* ── Floating AI Sidebar Premium ── */
+  #aiSidebar {
+    position: fixed;
+    top: 0;
+    right: -420px;
+    width: 400px;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(20px);
+    border-left: 1px solid var(--glass-border);
+    box-shadow: -20px 0 50px rgba(0,0,0,0.5);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1060;
+    display: flex;
+    flex-direction: column;
+  }
+  #aiSidebar.open { right: 0; }
+
+  #aiToggleBtn {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    width: 65px;
+    height: 65px;
+    border-radius: 20px;
+    background: var(--primary-gradient);
     color: white;
     border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+    z-index: 1050;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
   }
-  .btn-send:hover { background: var(--accent-glow); }
+  #aiToggleBtn:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+  }
 
-  /* Suggestion Pills */
-  .suggestions {
+  .chat-header-premium {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255,255,255,0.02);
   }
-  .suggestion-pill {
+
+  .chat-bubble-premium {
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .chat-ai-premium {
     background: rgba(255,255,255,0.05);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 0.3rem 0.75rem;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s;
+    color: var(--text-main);
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
   }
-  .suggestion-pill:hover {
-    background: rgba(78, 143, 255, 0.1);
-    color: var(--primary);
-    border-color: var(--primary);
+  .chat-user-premium {
+    background: var(--accent-blue);
+    color: white;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
   }
 
-  /* ── Responsive Dashboard ── */
+  /* ── Mobile Optimization ── */
   @media (max-width: 768px) {
-    #aiSidebar {
-      top: 0;
-      height: 100vh;
-      width: 100%;
-      right: -100%;
-      border-radius: 0;
-      z-index: 1060;
-    }
-    .stat-card { 
-      flex-direction: column; 
-      text-align: center; 
-      gap: 0.75rem; 
-      padding: 1.5rem 1rem; 
-    }
-    .stat-icon { width: 50px; height: 50px; font-size: 1.5rem; }
-    .stat-value { font-size: 1.75rem; }
-    .upload-box { min-height: 200px; padding: 2rem 1rem; }
-    .table-custom th, .table-custom td { padding: 0.75rem 1rem; font-size: 0.85rem; }
-    #aiToggleBtn { bottom: 20px; right: 20px; width: 50px; height: 50px; }
-    #aiToggleBtn i { font-size: 1.25rem; }
+    #aiSidebar { width: 100%; right: -100%; }
+    .stat-card { padding: 1.25rem; }
+    .stat-value { font-size: 1.5rem; }
+    .upload-box-premium { min-height: 250px; }
+    #aiToggleBtn { bottom: 25px; right: 25px; width: 55px; height: 55px; font-size: 1.5rem; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid px-lg-5 px-3">
+<div class="container py-4">
+
+  <!-- ── Welcome Header ── -->
+  <div class="mb-5">
+    <h2 class="font-outfit display-6 fw-bold mb-2">Welcome back, <span class="text-gradient-blue">{{ session.get('username') }}</span></h2>
+    <p class="text-muted">Manage your cloud storage and interact with your AI assistant.</p>
+  </div>
 
   <!-- ── Top Stats Row ── -->
   <div class="row g-4 mb-5">
@@ -427,10 +243,7 @@
         </div>
         <div>
           <div class="stat-value">{{ total_files }}</div>
-          <div class="stat-label">
-            <i class="bi bi-dot" style="font-size:1.5rem; margin-right:-8px;"></i>
-            Total Unique Files
-          </div>
+          <div class="stat-label">Total Unique Files</div>
         </div>
       </div>
     </div>
@@ -441,10 +254,7 @@
         </div>
         <div>
           <div class="stat-value">{{ total_versions }}</div>
-          <div class="stat-label">
-            <i class="bi bi-dot" style="font-size:1.5rem; margin-right:-8px;"></i>
-            Total Versions Stored
-          </div>
+          <div class="stat-label">Total Versions Stored</div>
         </div>
       </div>
     </div>
@@ -455,58 +265,56 @@
     
     <!-- Upload Section -->
     <div class="col-12 col-lg-5">
-      <div class="section-title">
-        <i class="bi bi-cloud-arrow-up"></i> UPLOAD FILE
+      <div class="section-title-premium">
+        <i class="bi bi-cloud-arrow-up"></i> Upload New File
       </div>
       
-      <div class="upload-box" id="dropZone">
-        <i class="bi bi-cloud-arrow-up upload-icon"></i>
-        <div class="upload-title">Drag & Drop your file here</div>
-        <div class="upload-subtitle">
-          or <span class="upload-link">browse to upload</span>
-        </div>
-        <div class="mt-3 text-muted" style="font-size: 0.75rem;">
-          All file types supported • Max 50 MB
-        </div>
-        <div class="mt-3 w-100 px-3">
-          <label class="folder-select-label"><i class="bi bi-folder2 me-1"></i>Select Destination Folder</label>
-          <select id="uploadFolderSelect" class="form-select form-control-custom w-100">
-            <option value="None" style="background:#0f172a;color:#e2e8f0;">📁 Root Directory</option>
-            {% for folder in folders %}
-            <option value="{{ folder.id }}" style="background:#0f172a;color:#e2e8f0;">📂 {{ folder.name }}</option>
-            {% endfor %}
-          </select>
-        </div>
+      <div class="mb-3">
+        <label class="text-muted small fw-bold mb-2 d-block">DESTINATION FOLDER</label>
+        <select id="folderSelect" name="folder_id" class="form-select form-control-premium w-100">
+          <option value="">📁 Root Directory</option>
+          {% for folder in folders %}
+          <option value="{{ folder.id }}">📁 {{ folder.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="upload-box-premium" id="dropZone">
+        <i class="bi bi-cloud-arrow-up upload-icon-premium"></i>
+        <h5 class="font-outfit fw-bold mb-2">Drag & Drop Files</h5>
+        <p class="text-muted small mb-0">or click to browse from your computer</p>
         <input type="file" id="fileInput" class="d-none">
       </div>
 
-      <!-- Upload Progress Container (Hidden by default) -->
-      <div id="progressWrap" class="progress-container d-none">
-        <div class="progress-text">
-          <span id="uploadFilename" class="text-truncate" style="max-width: 80%;">filename.txt</span>
-          <span id="uploadPct">0%</span>
+      <!-- Upload Progress -->
+      <div id="progressWrap" class="mt-4 d-none">
+        <div class="glass-panel p-3">
+          <div class="d-flex justify-content-between mb-2">
+            <span id="uploadFilename" class="text-truncate small fw-bold" style="max-width: 70%;">filename.txt</span>
+            <span id="uploadPct" class="small fw-bold text-primary">0%</span>
+          </div>
+          <div class="progress" style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+            <div id="progressFill" class="progress-bar" role="progressbar" style="width: 0%; background: var(--primary-gradient)"></div>
+          </div>
+          <div id="progressStatus" class="small mt-2 text-center text-muted">Uploading...</div>
         </div>
-        <div class="progress">
-          <div id="progressFill" class="progress-bar" role="progressbar" style="width: 0%;"></div>
-        </div>
-        <div id="progressStatus" class="status-text">Uploading...</div>
       </div>
     </div>
 
     <!-- Recent Uploads Table -->
     <div class="col-12 col-lg-7">
-      <div class="section-title">
-        <i class="bi bi-clock-history"></i> RECENT UPLOADS
+      <div class="section-title-premium">
+        <i class="bi bi-clock-history"></i> Recent Uploads
       </div>
       
-      <div class="table-card">
+      <div class="table-premium">
         <div class="table-responsive">
-          <table class="table table-custom">
+          <table class="table table-dark table-hover mb-0">
             <thead>
               <tr>
-                <th>FILE NAME</th>
-                <th>VERSION</th>
-                <th>DATE</th>
+                <th>File Name</th>
+                <th>Version</th>
+                <th>Uploaded At</th>
               </tr>
             </thead>
             <tbody id="recentBody">
@@ -514,26 +322,32 @@
                 {% for f in recent %}
                 <tr>
                   <td>
-                    <div class="file-name">
-                      <i class="bi bi-file-earmark-fill"></i>
-                      {{ f.original_name }}
+                    <div class="d-flex align-items-center">
+                      <i class="bi bi-file-earmark-fill text-primary me-2 fs-5"></i>
+                      <span class="fw-bold">{{ f.original_name }}</span>
                     </div>
                   </td>
                   <td>
-                    <span class="badge-version">v{{ f.version }}</span>
+                    <span class="badge-premium-v">v{{ f.version }}</span>
                   </td>
                   <td>
-                    <div class="date-text"><i class="bi bi-calendar3 me-1"></i>{{ f.timestamp }}</div>
+                    <div class="text-muted small"><i class="bi bi-calendar3 me-1"></i>{{ f.timestamp }}</div>
                   </td>
                 </tr>
                 {% endfor %}
               {% else %}
-                <tr>
-                  <td colspan="3" class="text-center text-muted py-4">No files uploaded yet.</td>
-                </tr>
+              <tr>
+                <td colspan="3" class="text-center py-5">
+                  <i class="bi bi-inbox text-muted display-4 d-block mb-3"></i>
+                  <p class="text-muted">No files uploaded yet.</p>
+                </td>
+              </tr>
               {% endif %}
             </tbody>
           </table>
+        </div>
+        <div class="p-3 bg-dark bg-opacity-25 text-center">
+          <a href="{{ url_for('files') }}" class="btn btn-outline-premium btn-sm">View All Files</a>
         </div>
       </div>
     </div>
@@ -542,209 +356,39 @@
 
 <!-- ── Floating AI Sidebar ── -->
 <div id="aiSidebar">
-  <div class="chat-header">
-    <div class="chat-header-title">
-      <i class="bi bi-robot"></i> AI Assistant
+  <div class="chat-header-premium">
+    <div class="font-outfit fw-bold d-flex align-items-center">
+      <i class="bi bi-robot me-2 text-primary"></i> AI Assistant
     </div>
-    <button class="btn-close-chat" id="closeAiBtn"><i class="bi bi-x-lg"></i></button>
+    <button class="btn-close btn-close-white" id="closeAiBtn"></button>
   </div>
   
-  <div class="chat-body" id="chatContainer">
-    <div class="chat-bubble chat-ai">
-      Hello! I'm your Cloud AI Assistant. I can help you understand your storage usage, recover files, or explain duplicate prevention.
+  <div class="chat-body p-4 flex-grow-1 overflow-auto d-flex flex-column" id="chatContainer">
+    <div class="chat-bubble-premium chat-ai-premium">
+      Hello! I'm your **CloudProtect AI Assistant**. I can help you analyze storage, manage versions, and explain our security features.
     </div>
   </div>
 
-  <div class="chat-input-area">
-    <div class="suggestions">
-      <div class="suggestion-pill">Storage usage</div>
-      <div class="suggestion-pill">Duplicate prevention</div>
-      <div class="suggestion-pill">Recent uploads</div>
+  <div class="p-4 border-top border-opacity-10 bg-dark bg-opacity-25">
+    <div class="d-flex flex-wrap gap-2 mb-3" id="suggestions">
+      <button class="btn btn-outline-premium btn-sm py-1 px-3 suggestion-pill">Storage usage</button>
+      <button class="btn btn-outline-premium btn-sm py-1 px-3 suggestion-pill">Help me organize</button>
     </div>
-    <div class="chat-input-wrapper">
-      <input type="text" id="chatInput" class="chat-input" placeholder="Ask a question..." autocomplete="off">
-      <button class="btn-send" id="sendBtn"><i class="bi bi-send-fill"></i></button>
+    <div class="input-group">
+      <input type="text" id="chatInput" class="form-control form-control-premium" placeholder="Ask anything..." autocomplete="off">
+      <button class="btn btn-gradient px-3" id="sendBtn"><i class="bi bi-send-fill"></i></button>
     </div>
   </div>
 </div>
 
 <!-- Floating Action Button -->
-<button id="aiToggleBtn" title="Open AI Assistant">
-  <i class="bi bi-chat-quote-fill"></i>
+<button id="aiToggleBtn">
+  <i class="bi bi-chat-dots-fill"></i>
 </button>
 
 {% endblock %}
 
 {% block scripts %}
-<script>
-  // ── Upload Logic ──
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  const progressWrap = document.getElementById('progressWrap');
-  const progressFill = document.getElementById('progressFill');
-  const uploadPct = document.getElementById('uploadPct');
-  const uploadFName = document.getElementById('uploadFilename');
-  const progStatus = document.getElementById('progressStatus');
-
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, preventDefaults, false);
-  });
-  function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-
-  ['dragenter', 'dragover'].forEach(eventName => {
-    dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
-  });
-  ['dragleave', 'drop'].forEach(eventName => {
-    dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
-  });
-
-  dropZone.addEventListener('drop', handleDrop, false);
-  dropZone.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', function() {
-    if (this.files.length > 0) uploadFile(this.files[0]);
-  });
-
-  function handleDrop(e) {
-    let dt = e.dataTransfer;
-    let files = dt.files;
-    if (files.length > 0) uploadFile(files[0]);
-  }
-
-  function uploadFile(file) {
-    progressWrap.classList.remove('d-none');
-    uploadFName.textContent = file.name;
-    uploadPct.textContent = '0%';
-    progressFill.style.width = '0%';
-    
-    // Reset colors to primary (blue) while uploading
-    progressFill.style.backgroundColor = 'var(--primary)';
-    progStatus.style.color = 'var(--primary)';
-    progStatus.textContent = 'Uploading...';
-
-    let formData = new FormData();
-    formData.append('file', file);
-    const folderId = document.getElementById('uploadFolderSelect').value;
-    formData.append('folder_id', folderId);
-
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', '{{ url_for("upload") }}', true);
-
-    xhr.upload.addEventListener('progress', function(e) {
-      if (e.lengthComputable) {
-        let percent = Math.round((e.loaded / e.total) * 100);
-        progressFill.style.width = percent + '%';
-        uploadPct.textContent = percent + '%';
-      }
-    });
-
-    xhr.onload = function() {
-      let data = {};
-      try { data = JSON.parse(xhr.responseText); } catch(e) {}
-      
-      if (xhr.status === 200 && data.success) {
-        progressFill.style.backgroundColor = 'var(--success)';
-        progStatus.style.color = 'var(--success)';
-        progStatus.textContent = 'Upload successful!';
-        
-        setTimeout(() => location.reload(), 1500);
-      } else {
-        progressFill.style.backgroundColor = 'var(--danger)';
-        progStatus.style.color = 'var(--danger)';
-        progStatus.textContent = data.error || 'Server error: ' + xhr.status;
-      }
-    };
-
-    xhr.onerror = function() {
-      progressFill.style.backgroundColor = 'var(--danger)';
-      progStatus.style.color = 'var(--danger)';
-      progStatus.textContent = 'Network error during upload.';
-    };
-
-    xhr.send(formData);
-  }
-
-  // ── Chatbot Logic ──
-  const sidebar = document.getElementById('aiSidebar');
-  const toggleBtn = document.getElementById('aiToggleBtn');
-  const closeBtn = document.getElementById('closeAiBtn');
-  const chatContainer = document.getElementById('chatContainer');
-  const chatInput = document.getElementById('chatInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const suggestionPills = document.querySelectorAll('.suggestion-pill');
-
-  function toggleSidebar() {
-    sidebar.classList.toggle('open');
-    if (sidebar.classList.contains('open')) {
-      chatInput.focus();
-    }
-  }
-
-  toggleBtn.addEventListener('click', toggleSidebar);
-  closeBtn.addEventListener('click', toggleSidebar);
-
-  function scrollToBottom() {
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  }
-
-  function appendMessage(text, sender) {
-    const div = document.createElement('div');
-    div.className = `chat-bubble chat-${sender}`;
-    // Format bold text from markdown
-    const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-    div.innerHTML = formattedText;
-    chatContainer.appendChild(div);
-    scrollToBottom();
-  }
-
-  function showTyping() {
-    const div = document.createElement('div');
-    div.id = 'typingIndicator';
-    div.className = 'typing-indicator';
-    div.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-    chatContainer.appendChild(div);
-    scrollToBottom();
-  }
-
-  function removeTyping() {
-    const indicator = document.getElementById('typingIndicator');
-    if (indicator) indicator.remove();
-  }
-
-  async function sendMessage(text) {
-    if (!text.trim()) return;
-    
-    appendMessage(text, 'user');
-    chatInput.value = '';
-    showTyping();
-
-    try {
-      const res = await fetch('/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      });
-      const data = await res.json();
-      removeTyping();
-      if (data.success) {
-        appendMessage(data.response, 'ai');
-      } else {
-        appendMessage('Error: ' + data.error, 'ai');
-      }
-    } catch (err) {
-      removeTyping();
-      appendMessage('Connection error.', 'ai');
-    }
-  }
-
-  sendBtn.addEventListener('click', () => sendMessage(chatInput.value));
-  chatInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendMessage(chatInput.value);
-  });
-
-  suggestionPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      sendMessage(pill.textContent);
-    });
-  });
-</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 {% endblock %}
+

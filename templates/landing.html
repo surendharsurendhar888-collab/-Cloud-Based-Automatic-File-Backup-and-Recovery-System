@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block title %}AI-Powered Cloud Backup & Recovery Platform{% endblock %}
+
+{% block content %}
+<!-- ── Hero Section ── -->
+<section class="hero-section text-center">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    
+    <div class="container">
+        <div class="reveal">
+            <h1 class="hero-headline font-outfit">
+                AI-Powered <span class="text-gradient-blue">Cloud Backup</span> <br>
+                & Recovery Platform
+            </h1>
+            <p class="hero-subheading">
+                Securely backup, organize, recover, and manage your files using intelligent AI-powered cloud storage with enterprise-grade security.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/register" class="btn btn-gradient btn-lg px-5">Get Started</a>
+                <a href="/login/google" class="btn btn-outline-premium btn-lg px-4">
+                    <i class="bi bi-google me-2"></i> Continue with Google
+                </a>
+            </div>
+        </div>
+
+        <!-- Hero Visuals -->
+        <div class="hero-visual-container reveal mt-5 pt-4">
+            <div class="position-relative d-inline-block">
+                <!-- Floating Dashboard Mockup -->
+                <img src="{{ url_for('static', filename='images/dashboard_full.png') }}" alt="Dashboard Preview" class="img-fluid floating-dashboard rounded-4 border border-opacity-10">
+                
+                <!-- Floating AI Assistant Card -->
+                <div class="hero-card glass-panel p-3 text-start d-none d-lg-block" style="top: 20%; right: -100px; width: 280px;">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="rounded-circle bg-primary bg-opacity-25 p-2 me-2">
+                            <i class="bi bi-robot text-primary"></i>
+                        </div>
+                        <span class="fw-bold small">AI Assistant</span>
+                    </div>
+                    <p class="small text-muted mb-0">"Your storage is 85% full. I can help you identify duplicates to save space."</p>
+                </div>
+
+                <!-- Floating Stats Card -->
+                <div class="hero-card glass-panel p-3 text-start d-none d-lg-block" style="bottom: 10%; left: -100px; width: 200px;">
+                    <div class="text-success small fw-bold mb-1">
+                        <i class="bi bi-shield-check me-1"></i> Recovery Success
+                    </div>
+                    <div class="h4 fw-bold mb-0">99.9%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Features Section ── -->
+<section id="features" class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <h2 class="font-outfit display-5 fw-bold mb-3">Next-Gen <span class="text-gradient-blue">Security Features</span></h2>
+            <p class="text-muted max-width-600 mx-auto">Enterprise-level tools designed to keep your data safe and organized.</p>
+        </div>
+
+        <div class="row g-4">
+            {% set features = [
+                {"title": "SHA-256 Prevention", "icon": "hash", "desc": "Detect and block duplicate files using advanced cryptographic hashing.", "delay": "0"},
+                {"title": "Version Control", "icon": "layers", "desc": "Intelligent versioning allows you to restore any previous state instantly.", "delay": "0.1s"},
+                {"title": "AI Assistant", "icon": "robot", "desc": "A smart assistant that helps you organize files and find what you need.", "delay": "0.2s"},
+                {"title": "Hierarchy Folders", "icon": "folder2", "desc": "Manage complex folder structures with ease and lightning-fast search.", "delay": "0.3s"},
+                {"title": "Secure Cloud", "icon": "shield-lock", "desc": "All files are encrypted and stored in ultra-secure global data centers.", "delay": "0.4s"},
+                {"title": "Google OAuth", "icon": "google", "desc": "Seamless and secure authentication using your existing Google account.", "delay": "0.5s"},
+                {"title": "Smart Recovery", "icon": "arrow-counterclockwise", "desc": "AI-guided recovery process makes data restoration effortless.", "delay": "0.6s"},
+                {"title": "Responsive UI", "icon": "display", "desc": "A premium dashboard that works beautifully on any device or screen size.", "delay": "0.7s"}
+            ] %}
+            
+            {% for feature in features %}
+            <div class="col-lg-3 col-md-6 reveal" style="--delay: {{ feature.delay }}; transition-delay: var(--delay);">
+                <div class="glass-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-{{ feature.icon }}"></i>
+                    </div>
+                    <h4 class="font-outfit fw-bold mb-3">{{ feature.title }}</h4>
+                    <p class="text-muted small mb-0">{{ feature.desc }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ── Dashboard Preview Section ── -->
+<section id="dashboard-preview" class="section-padding bg-dark bg-opacity-25">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 reveal">
+                <h2 class="font-outfit display-5 fw-bold mb-4">A Command Center for <span class="text-gradient-blue">Your Data</span></h2>
+                <p class="text-muted mb-4">Our intuitive dashboard gives you complete control over your cloud storage. Monitor usage, manage folders, and interact with the AI assistant all in one place.</p>
+                <ul class="list-unstyled mb-5">
+                    <li class="d-flex align-items-center mb-3">
+                        <i class="bi bi-check2-circle text-primary me-3 fs-4"></i>
+                        <span>Real-time storage analytics and usage tracking</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-3">
+                        <i class="bi bi-check2-circle text-primary me-3 fs-4"></i>
+                        <span>Drag-and-drop hierarchical folder management</span>
+                    </li>
+                    <li class="d-flex align-items-center mb-3">
+                        <i class="bi bi-check2-circle text-primary me-3 fs-4"></i>
+                        <span>Instant AI-powered file search and discovery</span>
+                    </li>
+                </ul>
+                <a href="/dashboard" class="btn btn-gradient btn-lg">Explore Dashboard</a>
+            </div>
+            <div class="col-lg-6 reveal">
+                <div class="glass-panel p-2 shadow-lg">
+                    <img src="{{ url_for('static', filename='images/dashboard_full.png') }}" alt="Dashboard Full View" class="img-fluid rounded-4">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── How It Works Section ── -->
+<section id="how-it-works" class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <h2 class="font-outfit display-5 fw-bold mb-3">Simple <span class="text-gradient-blue">Workflow</span></h2>
+            <p class="text-muted">How we protect and manage your data in four simple steps.</p>
+        </div>
+
+        <div class="row timeline-container g-4">
+            {% set steps = [
+                {"title": "Upload File", "desc": "Securely upload your files via our drag-and-drop interface."},
+                {"title": "Verification", "desc": "SHA-256 hashing ensures data integrity and deduplication."},
+                {"title": "AI Processing", "desc": "AI analyzes and categorizes your files for easy management."},
+                {"title": "Smart Recovery", "desc": "Restore any version of your file instantly when needed."}
+            ] %}
+            
+            {% for step in steps %}
+            <div class="col-md-3 text-center reveal" style="--delay: {{ loop.index0 * 0.1 }}s; transition-delay: var(--delay);">
+                <div class="step-number">{{ loop.index }}</div>
+                <h5 class="font-outfit fw-bold mb-2">{{ step.title }}</h5>
+                <p class="text-muted small">{{ step.desc }}</p>
+                {% if not loop.last %}
+                <div class="d-none d-md-block position-absolute top-0 start-100 translate-middle-x mt-4" style="width: 50%; height: 2px; background: linear-gradient(90deg, var(--accent-blue), transparent); z-index: -1;"></div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ── AI Assistant Section ── -->
+<section id="ai-assistant" class="section-padding bg-dark bg-opacity-25">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 order-lg-2 reveal">
+                <h2 class="font-outfit display-5 fw-bold mb-4">Your Intelligent <span class="text-gradient-blue">Storage Partner</span></h2>
+                <p class="text-muted mb-4">CloudProtect AI isn't just storage. It's a smart assistant that understands your data. Ask questions, get insights, and manage files through natural conversation.</p>
+                <div class="glass-panel p-4 mb-4">
+                    <div class="ai-preview-chat">
+                        <div class="chat-bubble chat-user">"How much storage did I use this month?"</div>
+                        <div class="chat-bubble chat-ai">"You've used 12.4 GB. You have 3 duplicate PDF files that you can delete to save 450 MB."</div>
+                        <div class="chat-bubble chat-user">"Recover the previous version of project_final.doc"</div>
+                        <div class="chat-bubble chat-ai">"Restoring project_final.doc version 4 from May 10th. Done!"</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 order-lg-1 reveal">
+                <div class="glass-panel p-2 shadow-lg">
+                    <img src="{{ url_for('static', filename='images/ai_chatbot.png') }}" alt="AI Assistant Mockup" class="img-fluid rounded-4">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Stats Section ── -->
+<section class="section-padding">
+    <div class="container">
+        <div class="glass-panel p-5 text-center reveal">
+            <div class="row g-4">
+                <div class="col-md-3 stat-item">
+                    <h3 data-count="12500">0</h3>
+                    <p class="text-muted fw-bold">Files Protected</p>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <h3 data-count="99.9">0</h3>
+                    <p class="text-muted fw-bold">Backup Accuracy (%)</p>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <h3 data-count="4.8">0</h3>
+                    <p class="text-muted fw-bold">TB Stored</p>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <h3 data-count="99.7">0</h3>
+                    <p class="text-muted fw-bold">Recovery Success (%)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer class="footer-premium">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <a class="d-flex align-items-center text-decoration-none mb-4" href="/">
+                    <i class="bi bi-cloud-check-fill me-2 fs-3" style="color: var(--accent-cyan)"></i>
+                    <span class="navbar-brand-premium">CloudProtect AI</span>
+                </a>
+                <p class="text-muted mb-4">The next generation of AI-powered cloud storage. Secure, intelligent, and built for the future.</p>
+                <div class="d-flex gap-3">
+                    <a href="#" class="btn btn-outline-premium btn-sm rounded-circle"><i class="bi bi-github"></i></a>
+                    <a href="#" class="btn btn-outline-premium btn-sm rounded-circle"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="btn btn-outline-premium btn-sm rounded-circle"><i class="bi bi-twitter-x"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-2 col-6">
+                <h5 class="font-outfit fw-bold mb-4">Platform</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#features" class="footer-link">Features</a></li>
+                    <li class="mb-2"><a href="#dashboard-preview" class="footer-link">Dashboard</a></li>
+                    <li class="mb-2"><a href="#ai-assistant" class="footer-link">AI Assistant</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-2 col-6">
+                <h5 class="font-outfit fw-bold mb-4">Support</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="footer-link">Help Center</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">API Docs</a></li>
+                    <li class="mb-2"><a href="#" class="footer-link">Security</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4">
+                <h5 class="font-outfit fw-bold mb-4">Technologies Used</h5>
+                <p class="text-muted small">Built with Flask, Supabase, Groq AI & Google OAuth</p>
+                <div class="d-flex gap-3 mt-3">
+                    <img src="https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask" height="25">
+                    <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" height="25">
+                    <img src="https://img.shields.io/badge/Google-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Google" height="25">
+                </div>
+            </div>
+        </div>
+        <hr class="my-5 border-opacity-10">
+        <div class="text-center">
+            <p class="text-muted small mb-0">© 2026 Surendhar T. All rights reserved.</p>
+            <p class="text-muted small mt-2">AI-Powered Cloud Backup & Recovery Platform</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}
