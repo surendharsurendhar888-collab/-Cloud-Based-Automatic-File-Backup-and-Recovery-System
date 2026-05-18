@@ -72,7 +72,8 @@ UPLOAD_DIR  = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ─── Database helpers (PostgreSQL) ────────────────────────────────────────────
-DATABASE_URL = env_config.get("DATABASE_URL") or os.environ.get("DATABASE_URL")
+raw_db_url = env_config.get("DATABASE_URL") or os.environ.get("DATABASE_URL")
+DATABASE_URL = raw_db_url.strip('"').strip("'") if raw_db_url else None
 
 # Connection pool for production stability
 db_pool = None
@@ -80,15 +81,14 @@ db_pool = None
 def init_pool():
     global db_pool
     if not DATABASE_URL:
-        print("[ERROR] DATABASE_URL missing. PostgreSQL migration failed.")
-        return
+        raise ValueError("DATABASE_URL environment variable is missing. PostgreSQL migration requires this to be set.")
     try:
         # psycopg2 doesn't support the pgbouncer=true query parameter, so we strip it if present
         clean_url = DATABASE_URL.split("?")[0] if "?" in DATABASE_URL else DATABASE_URL
         db_pool = pool.SimpleConnectionPool(1, 20, clean_url)
         print("[INFO] PostgreSQL connection pool initialized.")
     except Exception as e:
-        print(f"[ERROR] Could not initialize PostgreSQL pool: {e}")
+        raise Exception(f"Could not initialize PostgreSQL pool: {e}")
 
 init_pool()
 
