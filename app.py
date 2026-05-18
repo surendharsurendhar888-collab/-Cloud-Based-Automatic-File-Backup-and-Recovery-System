@@ -173,12 +173,16 @@ def init_db():
             )
         """)
 
+        # Ensure older folders table instances have modern columns
+        cur.execute("ALTER TABLE folders ADD COLUMN IF NOT EXISTS parent_id INTEGER REFERENCES folders(id) ON DELETE CASCADE")
+
         # Ensure older files table instances have modern columns
         cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS file_hash TEXT")
         cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS file_size BIGINT DEFAULT 0")
         cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS is_deleted SMALLINT DEFAULT 0")
         cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP")
         cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS is_starred SMALLINT DEFAULT 0")
+        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS folder_id INTEGER REFERENCES folders(id) ON DELETE CASCADE")
 
         # Activity Log table
         cur.execute("""
@@ -192,6 +196,11 @@ def init_db():
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+
+        # Ensure older activity_log table instances have modern columns
+        cur.execute("ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS folder_id INTEGER")
+        cur.execute("ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS file_name TEXT")
+        cur.execute("ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS version INTEGER")
 
         # Recent Activity table
         cur.execute("""
