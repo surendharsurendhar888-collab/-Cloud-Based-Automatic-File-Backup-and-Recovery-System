@@ -73,8 +73,13 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # ─── Database helpers (PostgreSQL) ────────────────────────────────────────────
 raw_db_url = env_config.get("DATABASE_URL") or os.environ.get("DATABASE_URL")
-DATABASE_URL = raw_db_url.strip('"').strip("'") if raw_db_url else None
-
+if raw_db_url:
+    raw_db_url = raw_db_url.strip()
+    if raw_db_url.startswith("DATABASE_URL="):
+        raw_db_url = raw_db_url.split("=", 1)[1]
+    DATABASE_URL = raw_db_url.strip('"').strip("'")
+else:
+    DATABASE_URL = None
 # Connection pool for production stability
 db_pool = None
 
