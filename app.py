@@ -83,7 +83,9 @@ def init_pool():
         print("[ERROR] DATABASE_URL missing. PostgreSQL migration failed.")
         return
     try:
-        db_pool = pool.SimpleConnectionPool(1, 20, DATABASE_URL)
+        # psycopg2 doesn't support the pgbouncer=true query parameter, so we strip it if present
+        clean_url = DATABASE_URL.split("?")[0] if "?" in DATABASE_URL else DATABASE_URL
+        db_pool = pool.SimpleConnectionPool(1, 20, clean_url)
         print("[INFO] PostgreSQL connection pool initialized.")
     except Exception as e:
         print(f"[ERROR] Could not initialize PostgreSQL pool: {e}")
@@ -182,6 +184,37 @@ def init_db():
                 file_id INTEGER REFERENCES files(id) ON DELETE CASCADE,
                 action TEXT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        # Chats table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS chats (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                message TEXT,
+                response TEXT,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        # Starred Files table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS starred_files (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                file_id INTEGER REFERENCES files(id) ON DELETE CASCADE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        # Trash table
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS trash (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                file_id INTEGER REFERENCES files(id) ON DELETE CASCADE,
+                deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
@@ -1463,6 +1496,18 @@ def chat():
     }
     
     ai_response = ask_ai(message, context_stats)
+    
+    # Log to chats table
+    conn = get_db()
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO chats (user_id, message, response) VALUES (%s, %s, %s)",
+            (user_id, message, ai_response)
+        )
+        conn.commit()
+    finally:
+        release_db(conn)
     
     return jsonify({
         "success": True,
