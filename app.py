@@ -139,6 +139,11 @@ def init_db():
             )
         """)
 
+        # Ensure older users table instances have modern columns
+        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT")
+        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT")
+        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT")
+
         # Folders table
         cur.execute("""
             CREATE TABLE IF NOT EXISTS folders (
@@ -167,6 +172,13 @@ def init_db():
                 is_starred SMALLINT DEFAULT 0
             )
         """)
+
+        # Ensure older files table instances have modern columns
+        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS file_hash TEXT")
+        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS file_size BIGINT DEFAULT 0")
+        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS is_deleted SMALLINT DEFAULT 0")
+        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP")
+        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS is_starred SMALLINT DEFAULT 0")
 
         # Activity Log table
         cur.execute("""
