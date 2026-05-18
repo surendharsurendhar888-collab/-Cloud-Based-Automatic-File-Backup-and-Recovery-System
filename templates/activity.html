@@ -47,7 +47,7 @@
                                     </p>
                                 </div>
                                 <span class="badge bg-glass text-muted small px-3 py-2 rounded-pill">
-                                    {{ act.timestamp.split(' ')[0] }}
+                                    {{ act.timestamp.strftime('%Y-%m-%d') if act.timestamp.strftime is defined else act.timestamp.split(' ')[0] }}
                                 </span>
                             </div>
                         </div>
