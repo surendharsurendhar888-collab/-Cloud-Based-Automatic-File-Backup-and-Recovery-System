@@ -377,7 +377,9 @@ def get_folder_path_list(folder_id, conn):
     path = []
     current_id = folder_id
     while current_id:
-        row = conn.execute("SELECT id, name, parent_id FROM folders WHERE id = ?", (current_id,)).fetchone()
+        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
+            cur.execute("SELECT id, name, parent_id FROM folders WHERE id = %s", (current_id,))
+            row = cur.fetchone()
         if not row:
             break
         path.insert(0, {"id": row["id"], "name": row["name"]})
