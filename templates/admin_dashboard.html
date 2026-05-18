@@ -177,7 +177,7 @@
               </td>
               <td><span class="badge-user-premium"><i class="bi bi-person-fill me-1"></i>{{ f.username }}</span></td>
               <td><span class="badge-premium-v">v{{ f.version }}</span></td>
-              <td><span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>{{ f.timestamp }}</span></td>
+              <td><span class="text-muted small"><i class="bi bi-calendar3 me-1"></i><span class="local-time" data-utc="{{ f.timestamp }}">{{ f.timestamp }}</span></span></td>
             </tr>
             {% endfor %}
           {% else %}

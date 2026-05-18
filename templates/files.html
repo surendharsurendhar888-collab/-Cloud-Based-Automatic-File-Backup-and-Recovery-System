@@ -267,7 +267,7 @@
               </a>
             </td>
             <td data-label="Latest Ver."><span class="text-muted small">Folder</span></td>
-            <td data-label="Last Modified"><span class="text-muted small">{{ folder.created_at }}</span></td>
+            <td data-label="Last Modified"><span class="text-muted small local-time" data-utc="{{ folder.created_at }}">{{ folder.created_at }}</span></td>
             <td data-label="Actions">
               <div class="d-flex gap-2">
                 <button class="btn btn-action-premium btn-ver-premium" title="Rename"
@@ -304,7 +304,7 @@
                 </div>
               </td>
               <td data-label="Latest Ver."><span class="badge-premium-v">v{{ row.latest_version }}</span></td>
-              <td data-label="Last Modified"><span class="text-muted small">{{ row.last_modified }}</span></td>
+              <td data-label="Last Modified"><span class="text-muted small local-time" data-utc="{{ row.last_modified }}">{{ row.last_modified }}</span></td>
               <td data-label="Actions">
                 <div class="d-flex gap-2 align-items-center justify-content-md-start justify-content-end">
                   {% if versions %}
@@ -334,7 +334,7 @@
                   <div class="version-item-premium">
                     <div class="d-flex align-items-center gap-3">
                       <span class="badge-premium-v">v{{ v.version }}</span>
-                      <span class="text-muted small">{{ v.timestamp }}</span>
+                      <span class="text-muted small local-time" data-utc="{{ v.timestamp }}">{{ v.timestamp }}</span>
                     </div>
                     <div class="d-flex gap-2 align-items-center">
                       <button class="btn btn-sm star-btn p-1" data-file-id="{{ v.id }}" title="{% if v.is_starred %}Unstar{% else %}Star{% endif %}">
