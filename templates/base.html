@@ -18,6 +18,7 @@
 
   <!-- Custom Landing CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
   <style>
     /* ── Root Design Tokens (Premium Dark SaaS) ── */
@@ -410,21 +411,13 @@
             <div class="dropdown d-none d-lg-block">
               <a class="nav-link profile-trigger p-0" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <div class="profile-avatar-sm">
-                  {% if session.get('avatar') %}
-                    <img src="{{ url_for('static', filename='uploads/profile/' + session.get('avatar')) }}" alt="Avatar">
-                  {% else %}
-                    <i class="bi bi-person-fill"></i>
-                  {% endif %}
+                  <img src="{{ profile_image_url }}?v={{ timestamp }}" alt="Avatar" onerror="this.src='/static/images/default-avatar.png'">
                 </div>
               </a>
               <div class="dropdown-menu dropdown-menu-end profile-panel-premium p-0" aria-labelledby="profileDropdown">
                 <div class="profile-panel-header p-4 text-center">
                   <div class="profile-avatar-lg mx-auto mb-3">
-                    {% if session.get('avatar') %}
-                      <img src="{{ url_for('static', filename='uploads/profile/' + session.get('avatar')) }}" alt="Avatar">
-                    {% else %}
-                      <i class="bi bi-person-fill fs-1"></i>
-                    {% endif %}
+                    <img src="{{ profile_image_url }}?v={{ timestamp }}" alt="Avatar" onerror="this.src='/static/images/default-avatar.png'">
                   </div>
                   <h6 class="fw-bold mb-0 text-white">{{ session.get('username') }}</h6>
                   <p class="small text-muted mb-3">{{ session.get('email') or 'Personal Account' }}</p>
@@ -483,12 +476,8 @@
       <div class="px-4 mb-4">
         {% if session.get('user_id') %}
           <div class="d-flex align-items-center gap-3 p-3 glass-panel" style="border-radius: var(--radius-md)">
-            <div class="profile-avatar" style="width: 48px; height: 48px;">
-              {% if session.get('avatar') %}
-                <img src="{{ url_for('static', filename='uploads/profile/' + session.get('avatar')) }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-              {% else %}
-                <i class="bi bi-person-fill fs-4"></i>
-              {% endif %}
+            <div class="profile-avatar" style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <img src="{{ profile_image_url }}?v={{ timestamp }}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/static/images/default-avatar.png'">
             </div>
             <div>
               <div class="fw-bold">{{ session.get('username') }}</div>

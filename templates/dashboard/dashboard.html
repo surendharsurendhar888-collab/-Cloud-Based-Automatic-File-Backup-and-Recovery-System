@@ -252,8 +252,8 @@
                 <stop offset="100%" stop-color="var(--accent-purple)" />
               </linearGradient>
             </defs>
-            <circle class="storage-ring-bg" cx="60" cy="60" r="52"></circle>
-            <circle class="storage-ring-fill" id="storageRingFill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7"></circle>
+            <circle class="storage-ring-bg" cx="60" cy="60" r="52" fill="none"></circle>
+            <circle class="storage-ring-fill" id="storageRingFill" cx="60" cy="60" r="52" stroke-dasharray="326.7" stroke-dashoffset="326.7" fill="none"></circle>
           </svg>
           <div class="position-absolute top-50 start-50 translate-middle text-center">
             <div class="fw-bold fs-5" id="storagePctText">0%</div>
@@ -291,16 +291,16 @@
   <div class="row mb-5">
     <div class="col-12">
       <div class="insight-card d-flex align-items-center justify-content-between flex-wrap gap-4">
-        <div class="d-flex align-items-center gap-4">
-          <div class="bg-white bg-opacity-20 rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px;">
-            <i class="bi bi-stars fs-2"></i>
+        <div class="d-flex align-items-center gap-4" style="z-index: 2;">
+          <div class="rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.35); box-shadow: 0 0 15px rgba(139, 92, 246, 0.25);">
+            <i class="bi bi-robot fs-2" style="color: #a78bfa; filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));"></i>
           </div>
           <div>
-            <h4 class="fw-bold mb-1">CloudProtect AI Insights</h4>
-            <p class="mb-0 opacity-75">Your storage is 100% secure. You have saved 25% space through deduplication.</p>
+            <h4 class="fw-bold mb-1 text-gradient-blue">CloudProtect AI Insights</h4>
+            <p class="mb-0 text-secondary" style="color: rgba(226, 232, 240, 0.85) !important;">Your storage is 100% secure. You have saved 25% space through deduplication.</p>
           </div>
         </div>
-        <button class="btn btn-white bg-white text-dark fw-bold px-4 rounded-pill hover-lift" onclick="toggleAI()">Talk to AI</button>
+        <button class="btn btn-white bg-white text-dark fw-bold px-4 rounded-pill hover-lift" style="z-index: 2;" onclick="toggleAI()">Talk to AI</button>
       </div>
     </div>
   </div>

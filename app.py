@@ -27,33 +27,12 @@ import string
 import random
 import time
 
-# ─── Environment Setup ────────────────────────────────────────────────────────
-BASE_DIR_ENV = os.path.dirname(os.path.abspath(__file__))
-env_config = dotenv_values(os.path.join(BASE_DIR_ENV, ".env"))
-GROQ_API_KEY = env_config.get("GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
-
-# Initialise Groq client (will be None-safe inside ask_ai)
-groq_client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
-
-# ─── Supabase client ────────────────────────────────────────────────────────
-from supabase import create_client, Client
-
-SUPABASE_URL = env_config.get("SUPABASE_URL") or os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = env_config.get("SUPABASE_KEY") or os.environ.get("SUPABASE_KEY")
-BUCKET_NAME  = "files"
-
-if not SUPABASE_URL or not SUPABASE_KEY:
-    print("[WARNING] Supabase credentials missing. Ensure SUPABASE_URL and SUPABASE_KEY are in your .env file.")
-
-# Create Supabase client (supabase-py 2.x accepts the publishable key directly)
-if SUPABASE_URL and SUPABASE_KEY:
-    try:
-        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-    except Exception as e:
-        print(f"[ERROR] Failed to initialize Supabase client: {e}")
-        supabase = None
-else:
-    supabase = None
+# ─── Environment & Modular Imports ────────────────────────────────────────────
+from utils.helpers import env_config
+from utils.db import get_db, release_db, init_db, log_activity, log_recent_activity
+from utils.auth import hash_password, login_required
+from utils.storage import get_folder_path_list, get_supabase_folder_path, supabase, BUCKET_NAME
+from utils.ai import ask_ai, groq_client
 
 # ─── Flask app setup ─────────────────────────────────────────────────────────
 app = Flask(__name__)
@@ -71,195 +50,6 @@ BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_DIR  = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# ─── Database helpers (PostgreSQL) ────────────────────────────────────────────
-raw_db_url = env_config.get("DATABASE_URL") or os.environ.get("DATABASE_URL")
-if raw_db_url:
-    raw_db_url = raw_db_url.strip()
-    if raw_db_url.startswith("DATABASE_URL="):
-        raw_db_url = raw_db_url.split("=", 1)[1]
-    DATABASE_URL = raw_db_url.strip('"').strip("'")
-else:
-    DATABASE_URL = None
-# Connection pool for production stability
-db_pool = None
-
-def init_pool():
-    global db_pool
-    if not DATABASE_URL:
-        raise ValueError("DATABASE_URL environment variable is missing. PostgreSQL migration requires this to be set.")
-    try:
-        # psycopg2 doesn't support the pgbouncer=true query parameter, so we strip it if present
-        clean_url = DATABASE_URL.split("?")[0] if "?" in DATABASE_URL else DATABASE_URL
-        db_pool = pool.SimpleConnectionPool(1, 20, clean_url)
-        print("[INFO] PostgreSQL connection pool initialized.")
-    except Exception as e:
-        raise Exception(f"Could not initialize PostgreSQL pool: {e}")
-
-init_pool()
-
-def get_db():
-    """Get a connection from the pool and return it with a DictCursor."""
-    global db_pool
-    if not db_pool:
-        init_pool()
-    
-    # Simple retry logic for production stability
-    for i in range(3):
-        try:
-            conn = db_pool.getconn()
-            # This allows row["column_name"] access like SQLite.Row
-            return conn
-        except Exception as e:
-            print(f"[RETRY {i+1}] Connection error: {e}")
-            time.sleep(1)
-            init_pool()
-    raise Exception("Could not connect to database after multiple retries.")
-
-def release_db(conn):
-    if db_pool and conn:
-        db_pool.putconn(conn)
-
-def init_db():
-    """Create PostgreSQL tables on startup."""
-    conn = get_db()
-    try:
-        cur = conn.cursor()
-        
-        # Users table
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                role TEXT DEFAULT 'user',
-                google_id TEXT,
-                email TEXT,
-                avatar TEXT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Ensure older users table instances have modern columns
-        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT")
-        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT")
-        cur.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT")
-
-        # Folders table
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS folders (
-                id SERIAL PRIMARY KEY,
-                name TEXT NOT NULL,
-                parent_id INTEGER REFERENCES folders(id) ON DELETE CASCADE,
-                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Files table
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS files (
-                id SERIAL PRIMARY KEY,
-                original_name TEXT NOT NULL,
-                supabase_path TEXT NOT NULL,
-                version INTEGER NOT NULL DEFAULT 1,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                folder_id INTEGER REFERENCES folders(id) ON DELETE CASCADE,
-                file_hash TEXT,
-                file_size BIGINT DEFAULT 0,
-                is_deleted SMALLINT DEFAULT 0,
-                deleted_at TIMESTAMP,
-                is_starred SMALLINT DEFAULT 0
-            )
-        """)
-
-        # Ensure older folders table instances have modern columns
-        cur.execute("ALTER TABLE folders ADD COLUMN IF NOT EXISTS parent_id INTEGER REFERENCES folders(id) ON DELETE CASCADE")
-
-        # Ensure older files table instances have modern columns
-        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS file_hash TEXT")
-        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS file_size BIGINT DEFAULT 0")
-        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS is_deleted SMALLINT DEFAULT 0")
-        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP")
-        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS is_starred SMALLINT DEFAULT 0")
-        cur.execute("ALTER TABLE files ADD COLUMN IF NOT EXISTS folder_id INTEGER REFERENCES folders(id) ON DELETE CASCADE")
-
-        # Activity Log table
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS activity_log (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                action TEXT NOT NULL,
-                file_name TEXT,
-                version INTEGER,
-                folder_id INTEGER,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Ensure older activity_log table instances have modern columns
-        cur.execute("ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS folder_id INTEGER")
-        cur.execute("ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS file_name TEXT")
-        cur.execute("ALTER TABLE activity_log ADD COLUMN IF NOT EXISTS version INTEGER")
-
-        # Recent Activity table
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS recent_activity (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-                file_id INTEGER REFERENCES files(id) ON DELETE CASCADE,
-                action TEXT,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Chats table
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS chats (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-                message TEXT,
-                response TEXT,
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Starred Files table
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS starred_files (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-                file_id INTEGER REFERENCES files(id) ON DELETE CASCADE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Trash table
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS trash (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-                file_id INTEGER REFERENCES files(id) ON DELETE CASCADE,
-                deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Admin user creation
-        cur.execute("SELECT id FROM users WHERE username = 'admin'")
-        if not cur.fetchone():
-            cur.execute(
-                "INSERT INTO users (username, password, role) VALUES (%s, %s, %s)",
-                ("admin", hashlib.sha256("admin123".encode()).hexdigest(), "admin")
-            )
-            print("[INFO] Default admin user created.")
-        
-        conn.commit()
-    except Exception as e:
-        print(f"[ERROR] init_db failed: {e}")
-        conn.rollback()
-    finally:
-        release_db(conn)
-
 # ─── OAuth Setup ──────────────────────────────────────────────────────────────
 oauth = OAuth(app)
 GOOGLE_CLIENT_ID = env_config.get("GOOGLE_CLIENT_ID") or os.environ.get("GOOGLE_CLIENT_ID")
@@ -273,125 +63,6 @@ if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
         server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
         client_kwargs={'scope': 'openid email profile'}
     )
-
-
-
-def hash_password(password: str) -> str:
-    """SHA-256 hash a password."""
-    return hashlib.sha256(password.encode()).hexdigest()
-
-def log_activity(user_id, action, file_name=None, version=None, folder_id=None):
-    """Log a user action to the activity_log table."""
-    conn = get_db()
-    try:
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO activity_log (user_id, action, file_name, version, folder_id) VALUES (%s, %s, %s, %s, %s)",
-            (user_id, action, file_name, version, folder_id)
-        )
-        conn.commit()
-    finally:
-        release_db(conn)
-
-def log_recent_activity(user_id, file_id, action):
-    """Update or insert into recent_activity table."""
-    conn = get_db()
-    try:
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute(
-            "SELECT id FROM recent_activity WHERE user_id = %s AND file_id = %s AND action = %s",
-            (user_id, file_id, action)
-        )
-        existing = cur.fetchone()
-
-        if existing:
-            cur.execute(
-                "UPDATE recent_activity SET timestamp = CURRENT_TIMESTAMP WHERE id = %s",
-                (existing["id"],)
-            )
-        else:
-            cur.execute(
-                "INSERT INTO recent_activity (user_id, file_id, action) VALUES (%s, %s, %s)",
-                (user_id, file_id, action)
-            )
-        conn.commit()
-    finally:
-        release_db(conn)
-
-
-def ask_ai(message, context_stats):
-    """Query Groq API (llama-3.1-8b-instant) with context about the user's storage and recent activity."""
-    if not groq_client:
-        return "Error: GROQ_API_KEY is not configured in the backend."
-
-    recent_activity_str = ""
-    if context_stats.get('recent_activity'):
-        recent_activity_str = "Recent User Activity:\n"
-        for act in context_stats['recent_activity']:
-            recent_activity_str += f"- {act['action'].capitalize()} '{act['file_name']}' (v{act['version'] or 1}) on {act['timestamp']}\n"
-
-    system_prompt = (
-        "You are CloudShield AI, a smart contextual Cloud Backup AI Assistant. "
-        "Keep all replies accurate, contextual, and short — under 3 sentences when possible. "
-        f"User storage stats: {context_stats['total_files']} file(s), "
-        f"{context_stats['total_versions']} version(s), "
-        f"{context_stats['total_folders']} folder(s), "
-        f"{context_stats['total_storage']} used.\n"
-        f"{recent_activity_str}\n"
-        "Use this real database data to answer questions about recent uploads, deletes, downloads, or restores. "
-        "If asked about recent activity, list the specific filenames and actions. "
-        "Be helpful, factual, and professional."
-    )
-
-    try:
-        completion = groq_client.chat.completions.create(
-            model="llama-3.1-8b-instant",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user",   "content": message}
-            ],
-            temperature=0.2,
-            max_tokens=150
-        )
-        return completion.choices[0].message.content
-    except Exception as e:
-        return f"Sorry, I encountered an error communicating with my AI brain: {str(e)}"
-
-# ─── Auth helpers ─────────────────────────────────────────────────────────────
-
-def login_required(f):
-    """Decorator: redirect to /login if not authenticated."""
-    from functools import wraps
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if "user_id" not in session:
-            flash("Please log in first.", "danger")
-            return redirect(url_for("login"))
-        return f(*args, **kwargs)
-    return decorated
-
-# ─── Folder Helpers ──────────────────────────────────────────────────────────
-
-def get_folder_path_list(folder_id, conn):
-    """Returns a list of dicts [{'id': 1, 'name': 'Folder1'}, ...] for breadcrumbs."""
-    path = []
-    current_id = folder_id
-    while current_id:
-        with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
-            cur.execute("SELECT id, name, parent_id FROM folders WHERE id = %s", (current_id,))
-            row = cur.fetchone()
-        if not row:
-            break
-        path.insert(0, {"id": row["id"], "name": row["name"]})
-        current_id = row["parent_id"]
-    return path
-
-def get_supabase_folder_path(folder_id, conn):
-    """Returns a string path like 'Folder1/Folder2' or empty string."""
-    if not folder_id:
-        return ""
-    path_list = get_folder_path_list(folder_id, conn)
-    return "/".join([secure_filename(f["name"]) for f in path_list])
 
 # Initialize database tables
 init_db()
@@ -418,7 +89,7 @@ def login():
 
         if not username or not password:
             flash("Username and password are required.", "danger")
-            return render_template("login.html")
+            return render_template("auth/login.html")
 
         conn = get_db()
         try:
@@ -443,7 +114,7 @@ def login():
         else:
             flash("Invalid username or password.", "danger")
 
-    return render_template("login.html")
+    return render_template("auth/login.html")
 
 
 # ── Google OAuth ──────────────────────────────────────────────────────────────
@@ -551,19 +222,19 @@ def register():
 
         if not username or not password:
             flash("All fields are required.", "danger")
-            return render_template("register.html")
+            return render_template("auth/register.html")
 
         if len(username) < 3:
             flash("Username must be at least 3 characters.", "danger")
-            return render_template("register.html")
+            return render_template("auth/register.html")
 
         if len(password) < 6:
             flash("Password must be at least 6 characters.", "danger")
-            return render_template("register.html")
+            return render_template("auth/register.html")
 
         if password != confirm:
             flash("Passwords do not match.", "danger")
-            return render_template("register.html")
+            return render_template("auth/register.html")
 
         conn = get_db()
         try:
@@ -581,7 +252,7 @@ def register():
         finally:
             release_db(conn)
 
-    return render_template("register.html")
+    return render_template("auth/register.html")
 
 
 # ── Logout ────────────────────────────────────────────────────────────────────
@@ -667,7 +338,7 @@ def dashboard():
         release_db(conn)
 
     return render_template(
-        "dashboard.html",
+        "dashboard/dashboard.html",
         total_files=total_files,
         total_versions=total_versions,
         total_storage=total_storage,
@@ -720,7 +391,7 @@ def admin_dashboard():
         release_db(conn)
 
     return render_template(
-        "admin_dashboard.html",
+        "dashboard/admin_dashboard.html",
         total_users=total_users,
         total_files=total_files,
         total_storage=total_storage,
@@ -894,7 +565,7 @@ def files():
         versions_map.setdefault(row["original_name"], []).append(dict(row))
 
     return render_template(
-        "files.html",
+        "files/files.html",
         summary=summary,
         versions_map=versions_map,
         subfolders=subfolders,
@@ -1319,7 +990,7 @@ def recent():
         recent_files = cur.fetchall()
     finally:
         release_db(conn)
-    return render_template("recent.html", recent_files=recent_files)
+    return render_template("files/recent.html", recent_files=recent_files)
 
 @app.route("/trash")
 @login_required
@@ -1337,7 +1008,7 @@ def trash():
         deleted_files = cur.fetchall()
     finally:
         release_db(conn)
-    return render_template("trash.html", deleted_files=deleted_files)
+    return render_template("files/trash.html", deleted_files=deleted_files)
 
 @app.route("/starred")
 @login_required
@@ -1355,7 +1026,7 @@ def starred():
         starred_files = cur.fetchall()
     finally:
         release_db(conn)
-    return render_template("starred.html", starred_files=starred_files)
+    return render_template("files/starred.html", starred_files=starred_files)
 
 @app.route("/toggle_star/<int:file_id>", methods=["POST"])
 @login_required
@@ -1399,7 +1070,7 @@ def activity():
         activities = cur.fetchall()
     finally:
         release_db(conn)
-    return render_template("activity.html", activities=activities)
+    return render_template("dashboard/activity.html", activities=activities)
 
 @app.route("/analytics")
 @login_required
@@ -1593,7 +1264,7 @@ def settings():
         "savings": format_size(savings_bytes)
     }
     
-    return render_template("settings.html", user=user, last_login=last_login, storage_stats=storage_stats)
+    return render_template("settings/settings.html", user=user, last_login=last_login, storage_stats=storage_stats)
 
 @app.route("/update_profile", methods=["POST"])
 @login_required
@@ -1656,6 +1327,24 @@ def update_profile():
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
         release_db(conn)
+
+@app.context_processor
+def inject_profile_data():
+    avatar = session.get('avatar')
+    profile_image_url = None
+    if avatar:
+        avatar_path = os.path.join(app.static_folder, 'uploads', 'profile', avatar)
+        if os.path.exists(avatar_path):
+            profile_image_url = url_for('static', filename='uploads/profile/' + avatar)
+            
+    if not profile_image_url:
+        profile_image_url = url_for('static', filename='images/default-avatar.png')
+    
+    import time
+    return {
+        'profile_image_url': profile_image_url,
+        'timestamp': int(time.time())
+    }
 
 # ─── Entry point ──────────────────────────────────────────────────────────────
 if __name__ == "__main__":
