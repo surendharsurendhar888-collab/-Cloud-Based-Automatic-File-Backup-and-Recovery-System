@@ -410,12 +410,6 @@
         
         <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
 
-          <!-- Dark/Light Mode Toggle (always visible in desktop navbar) -->
-          <button class="theme-toggle-btn" id="navbarThemeToggle" aria-label="Toggle theme" title="Toggle theme">
-            <i class="bi bi-sun-fill theme-icon"></i>
-            <span class="theme-label d-none d-xl-inline">Light Mode</span>
-          </button>
-
           {% if session.get('user_id') %}
             <!-- Profile Dropdown (Desktop) -->
             <div class="dropdown d-none d-lg-block">
@@ -458,9 +452,9 @@
                     <i class="bi bi-activity me-3"></i> Security Activity
                   </a>
                   <!-- Theme Toggle inside dropdown -->
-                  <button class="theme-toggle-btn dropdown-style dropdown-item-premium">
-                    <i class="bi bi-sun-fill theme-icon"></i>
-                    <span class="theme-label">Light Mode</span>
+                  <button id="dropdownThemeToggle" class="dropdown-item dropdown-item-premium w-100 text-start border-0" style="background:transparent; cursor:pointer;" type="button">
+                    <i class="bi bi-moon-stars-fill me-3" id="dropdownThemeIcon"></i>
+                    <span id="dropdownThemeLabel">Switch to Light Mode</span>
                   </button>
                   <div class="dropdown-divider-premium"></div>
                   <a class="dropdown-item dropdown-item-premium logout-item" href="/logout">
@@ -530,13 +524,6 @@
             </a>
           </li>
           <div class="dropdown-divider-premium mx-4"></div>
-          <!-- Theme Toggle in mobile sidebar -->
-          <li class="nav-item px-4 py-2">
-            <button class="theme-toggle-btn" style="width:100%; justify-content:flex-start; border-radius:12px; padding:0.75rem 1rem;">
-              <i class="bi bi-sun-fill theme-icon me-2"></i>
-              <span class="theme-label">Light Mode</span>
-            </button>
-          </li>
           <li class="nav-item">
             <a class="nav-link nav-link-premium py-3 px-4 {% if request.endpoint == 'settings' %}active{% endif %}" href="{{ url_for('settings') }}">
               <i class="bi bi-gear-fill me-3"></i> Settings

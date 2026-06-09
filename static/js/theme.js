@@ -1,89 +1,112 @@
 /**
  * CloudProtect AI — Dark / Light Mode Theme Toggle
- * Reads saved preference from localStorage on every page load (runs inline,
- * before paint, to prevent flash of wrong theme).
- * Default: "dark"  (matches the existing premium dark design)
+ * ─────────────────────────────────────────────────
+ * - Reads saved preference from localStorage on every page load.
+ * - Applies data-theme to <html> BEFORE first paint → no flash.
+ * - Wires a single click/touch listener to #dropdownThemeToggle.
+ * - Updates icon + label text to always show the *next* action.
+ *   • Current theme is dark  → show "Switch to Light Mode" (moon icon)
+ *   • Current theme is light → show "Switch to Dark Mode"  (sun icon)
+ * - Default theme: "dark" (preserves existing premium dark design).
  */
 
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "cloudprotect-theme";
-  const DEFAULT_THEME = "dark";
+  var STORAGE_KEY   = "cloudprotect-theme";
+  var DEFAULT_THEME = "dark";
 
-  /* ── Apply theme to <html> immediately (no FOUC) ── */
+  /* ── Helpers ────────────────────────────────────── */
+
+  function getSaved() {
+    try {
+      return localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME;
+    } catch (_) {
+      return DEFAULT_THEME;
+    }
+  }
+
+  function save(theme) {
+    try { localStorage.setItem(STORAGE_KEY, theme); } catch (_) {}
+  }
+
+  /* ── Core: apply theme to <html> ──────────────────
+     Called immediately (FOUC prevention) AND on every toggle.        */
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
-    // Keep body class in sync for Bootstrap-aware overrides
-    document.body.classList.toggle("theme-light", theme === "light");
-    document.body.classList.toggle("theme-dark", theme === "dark");
   }
 
-  /* ── Persist and broadcast the chosen theme ── */
-  function setTheme(theme) {
-    localStorage.setItem(STORAGE_KEY, theme);
-    applyTheme(theme);
-    updateToggles(theme);
+  /* ── Update dropdown button label + icon ──────────
+     Label always describes what WILL happen on click.                */
+  function syncDropdown(theme) {
+    var btn   = document.getElementById("dropdownThemeToggle");
+    var icon  = document.getElementById("dropdownThemeIcon");
+    var label = document.getElementById("dropdownThemeLabel");
+
+    if (!btn) return; // user not logged in / element not in DOM
+
+    if (theme === "dark") {
+      // currently dark → clicking will switch to light
+      if (icon)  { icon.className  = "bi bi-sun-fill me-3"; }
+      if (label) { label.textContent = "Switch to Light Mode"; }
+      btn.setAttribute("title", "Switch to Light Mode");
+    } else {
+      // currently light → clicking will switch to dark
+      if (icon)  { icon.className  = "bi bi-moon-stars-fill me-3"; }
+      if (label) { label.textContent = "Switch to Dark Mode"; }
+      btn.setAttribute("title", "Switch to Dark Mode");
+    }
   }
 
-  /* ── Return saved or default theme ── */
-  function getSavedTheme() {
-    return localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME;
-  }
-
-  /* ── Update every toggle button/icon on the page ── */
-  function updateToggles(theme) {
-    const isDark = theme === "dark";
-
-    document.querySelectorAll(".theme-toggle-btn").forEach(function (btn) {
-      const iconEl = btn.querySelector(".theme-icon");
-      const labelEl = btn.querySelector(".theme-label");
-
-      if (iconEl) {
-        iconEl.className = "bi theme-icon " + (isDark ? "bi-sun-fill" : "bi-moon-stars-fill");
-      }
-      if (labelEl) {
-        labelEl.textContent = isDark ? "Light Mode" : "Dark Mode";
-      }
-
-      btn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
-      btn.setAttribute("title", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
-    });
-  }
-
-  /* ── Toggle between dark and light ── */
+  /* ── Toggle ───────────────────────────────────────*/
   function toggleTheme() {
-    const current = getSavedTheme();
-    setTheme(current === "dark" ? "light" : "dark");
+    var next = getSaved() === "dark" ? "light" : "dark";
+    save(next);
+    applyTheme(next);
+    syncDropdown(next);
   }
 
-  /* ── Wire up all toggle buttons once DOM is ready ── */
-  function initToggles() {
-    document.querySelectorAll(".theme-toggle-btn").forEach(function (btn) {
-      btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        toggleTheme();
-      });
+  /* ── Init: wire listener ONCE after DOM ready ─────*/
+  function init() {
+    var btn = document.getElementById("dropdownThemeToggle");
+    if (!btn) return;
+
+    // Remove any stale listeners by cloning (safety for SPA-style reloads)
+    var fresh = btn.cloneNode(true);
+    btn.parentNode.replaceChild(fresh, btn);
+
+    // Attach both click (desktop) and touchend (mobile)
+    fresh.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleTheme();
     });
 
-    // Reflect current state on first render
-    updateToggles(getSavedTheme());
+    fresh.addEventListener("touchend", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleTheme();
+    }, { passive: false });
+
+    // Sync label/icon to saved theme on page load
+    syncDropdown(getSaved());
   }
 
-  /* ── Bootstrap: apply saved theme immediately (FOUC prevention) ── */
-  applyTheme(getSavedTheme());
+  /* ── Run immediately: apply theme before first paint ── */
+  applyTheme(getSaved());
 
-  /* ── Attach toggle listeners after DOM load ── */
+  /* ── Run after DOM is ready ── */
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initToggles);
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    initToggles();
+    init();
   }
 
-  /* ── Expose globally so inline handlers can also call it ── */
+  /* ── Global API (optional, for console debugging) ── */
   window.CloudTheme = {
-    toggle: toggleTheme,
-    set: setTheme,
-    get: getSavedTheme,
+    toggle : toggleTheme,
+    set    : function (t) { save(t); applyTheme(t); syncDropdown(t); },
+    get    : getSaved,
   };
-})();
+
+}());
