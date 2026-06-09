@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -325,6 +325,9 @@
   </style>
 
   {% block extra_head %}{% endblock %}
+
+  <!-- Theme Toggle — load EARLY to prevent flash of wrong theme -->
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
 </head>
 <body>
   <!-- Background Blobs -->
@@ -406,6 +409,13 @@
         </ul>
         
         <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+          <!-- Dark/Light Mode Toggle (always visible in desktop navbar) -->
+          <button class="theme-toggle-btn" id="navbarThemeToggle" aria-label="Toggle theme" title="Toggle theme">
+            <i class="bi bi-sun-fill theme-icon"></i>
+            <span class="theme-label d-none d-xl-inline">Light Mode</span>
+          </button>
+
           {% if session.get('user_id') %}
             <!-- Profile Dropdown (Desktop) -->
             <div class="dropdown d-none d-lg-block">
@@ -447,6 +457,11 @@
                   <a class="dropdown-item dropdown-item-premium" href="{{ url_for('activity') }}">
                     <i class="bi bi-activity me-3"></i> Security Activity
                   </a>
+                  <!-- Theme Toggle inside dropdown -->
+                  <button class="theme-toggle-btn dropdown-style dropdown-item-premium">
+                    <i class="bi bi-sun-fill theme-icon"></i>
+                    <span class="theme-label">Light Mode</span>
+                  </button>
                   <div class="dropdown-divider-premium"></div>
                   <a class="dropdown-item dropdown-item-premium logout-item" href="/logout">
                     <i class="bi bi-box-arrow-right me-3"></i> Sign Out
@@ -515,6 +530,13 @@
             </a>
           </li>
           <div class="dropdown-divider-premium mx-4"></div>
+          <!-- Theme Toggle in mobile sidebar -->
+          <li class="nav-item px-4 py-2">
+            <button class="theme-toggle-btn" style="width:100%; justify-content:flex-start; border-radius:12px; padding:0.75rem 1rem;">
+              <i class="bi bi-sun-fill theme-icon me-2"></i>
+              <span class="theme-label">Light Mode</span>
+            </button>
+          </li>
           <li class="nav-item">
             <a class="nav-link nav-link-premium py-3 px-4 {% if request.endpoint == 'settings' %}active{% endif %}" href="{{ url_for('settings') }}">
               <i class="bi bi-gear-fill me-3"></i> Settings
@@ -560,15 +582,16 @@
   <!-- Custom JS -->
   <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
   <script>
-    // ─── Navbar Scroll Effect ───
+    // ─── Navbar Scroll Effect (theme-aware) ───
     window.addEventListener('scroll', function() {
       const navbar = document.querySelector('.navbar-glass');
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
       if (window.scrollY > 20) {
         navbar.classList.add('py-2');
-        navbar.style.background = 'rgba(7, 15, 40, 0.9)';
+        navbar.style.background = isLight ? 'rgba(248, 250, 252, 0.97)' : 'rgba(7, 15, 40, 0.9)';
       } else {
         navbar.classList.remove('py-2');
-        navbar.style.background = 'rgba(7, 15, 40, 0.75)';
+        navbar.style.background = isLight ? 'rgba(248, 250, 252, 0.88)' : 'rgba(7, 15, 40, 0.75)';
       }
     });
 
