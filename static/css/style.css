@@ -706,3 +706,80 @@ body:not(.dark-mode) #searchInput {
   color: #000000 !important;
   border: 1px solid #CCCCCC !important;
 }
+
+/* 5. Navbar Active and Hover Link Visibility */
+body:not(.dark-mode) .nav-link-premium.active,
+body:not(.dark-mode) .nav-link-premium.active i,
+body:not(.dark-mode) .nav-link-premium:hover,
+body:not(.dark-mode) .nav-link-premium:hover i {
+  color: #000000 !important;
+  background: rgba(59, 130, 246, 0.12) !important;
+}
+
+/* 6. Overrides for table-dark Bootstrap tables in light mode */
+body:not(.dark-mode) .table-dark {
+  --bs-table-bg: #FFFFFF !important;
+  --bs-table-color: #000000 !important;
+  --bs-table-border-color: #CCCCCC !important;
+  --bs-table-hover-color: #000000 !important;
+  --bs-table-hover-bg: #F0F0F0 !important;
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+body:not(.dark-mode) .table-dark th,
+body:not(.dark-mode) .table-dark td {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border-bottom: 1px solid #CCCCCC !important;
+}
+
+body:not(.dark-mode) .table-dark thead,
+body:not(.dark-mode) .table-dark thead th {
+  background-color: #E8E8E8 !important;
+  color: #000000 !important;
+  border-bottom: 2px solid #CCCCCC !important;
+}
+
+body:not(.dark-mode) .table-dark tbody tr {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+body:not(.dark-mode) .table-dark tbody tr:nth-child(even) {
+  background-color: #F5F5F5 !important;
+}
+
+body:not(.dark-mode) .table-dark tbody tr:hover {
+  background-color: #F0F0F0 !important;
+}
+
+/* Specific overrides for files-table-premium */
+body:not(.dark-mode) .files-table-premium th {
+  background-color: #E8E8E8 !important;
+  color: #000000 !important;
+}
+
+body:not(.dark-mode) .files-table-premium td {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+}
+
+body:not(.dark-mode) .files-table-premium tr:nth-child(even) td {
+  background-color: #F5F5F5 !important;
+}
+
+body:not(.dark-mode) .files-table-premium tr:hover td {
+  background-color: #F0F0F0 !important;
+}
+
+/* 7. Version History Panel overrides */
+body:not(.dark-mode) .version-panel-premium {
+  background: #F8F9FA !important;
+  border-color: #D0D0D0 !important;
+}
+
+body:not(.dark-mode) .version-item-premium {
+  background: #FFFFFF !important;
+  border-color: #CCCCCC !important;
+}
