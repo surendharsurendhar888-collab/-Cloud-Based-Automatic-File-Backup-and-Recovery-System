@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -348,6 +348,13 @@
         <span class="navbar-brand-premium">CloudProtect AI</span>
       </a>
       
+      <!-- Mobile Theme Toggle Button -->
+      <div class="d-flex align-items-center gap-2 d-lg-none ms-auto me-2">
+        <button id="mobileThemeToggle" class="btn btn-outline-premium theme-toggle-btn p-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border);" title="Toggle Theme">
+          <span id="mobileThemeToggleIcon" style="font-size: 1.2rem;">🌙</span>
+        </button>
+      </div>
+
       <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
         <i class="bi bi-list fs-1"></i>
       </button>
@@ -409,6 +416,10 @@
         </ul>
         
         <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+          <!-- Desktop Theme Toggle Button -->
+          <button id="themeToggle" class="btn btn-outline-premium theme-toggle-btn p-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border);" title="Toggle Theme">
+            <span id="themeToggleIcon" style="font-size: 1.2rem;">🌙</span>
+          </button>
 
           {% if session.get('user_id') %}
             <!-- Profile Dropdown (Desktop) -->
@@ -572,13 +583,13 @@
     // ─── Navbar Scroll Effect (theme-aware) ───
     window.addEventListener('scroll', function() {
       const navbar = document.querySelector('.navbar-glass');
-      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      const isLight = !document.body.classList.contains('dark-mode');
       if (window.scrollY > 20) {
         navbar.classList.add('py-2');
-        navbar.style.background = isLight ? 'rgba(248, 250, 252, 0.97)' : 'rgba(7, 15, 40, 0.9)';
+        navbar.style.background = isLight ? '#FFFFFF' : '#111111';
       } else {
         navbar.classList.remove('py-2');
-        navbar.style.background = isLight ? 'rgba(248, 250, 252, 0.88)' : 'rgba(7, 15, 40, 0.75)';
+        navbar.style.background = isLight ? '#FFFFFF' : '#111111';
       }
     });
 
