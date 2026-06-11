@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    (function () {
+      var saved = localStorage.getItem("theme") || "light";
+      if (saved === "dark") {
+        document.documentElement.classList.add("dark-mode");
+      } else {
+        document.documentElement.classList.remove("dark-mode");
+      }
+    })();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}AI-Powered Cloud Backup & Recovery{% endblock %}</title>
@@ -21,32 +31,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
   <style>
-    /* ── Root Design Tokens (Premium Dark SaaS) ── */
-    :root {
-      --bg-deep:    #020617;
-      --bg-main:    #0f172a;
-      --bg-card:    rgba(30, 41, 59, 0.4);
-      --accent-blue: #3b82f6;
-      --accent-purple: #8b5cf6;
-      --accent-cyan: #06b6d4;
-      --accent-emerald: #10b981;
-      --text-main:  #f8fafc;
-      --text-muted: #94a3b8;
-      --border:     rgba(255, 255, 255, 0.08);
-      --glass-bg:   rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.1);
-      --primary-gradient: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-      --cyan-gradient: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      --emerald-gradient: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
-      --radius-sm: 8px;
-      --radius-md: 16px;
-      --radius-lg: 24px;
-      --radius-xl: 32px;
-      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-    }
+    /* Design tokens are now managed globally in style.css */
 
     /* ── Global Selection Highlight (Fix & Enhancement) ── */
     ::selection {

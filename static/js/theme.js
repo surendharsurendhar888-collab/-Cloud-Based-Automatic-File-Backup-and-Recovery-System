@@ -96,32 +96,30 @@
   function init() {
     var theme = getTheme();
     
-    // Apply class to body
+    // Apply class to body and documentElement
     if (theme === "dark") {
       document.body.classList.add("dark-mode");
+      document.documentElement.classList.add("dark-mode");
     } else {
       document.body.classList.remove("dark-mode");
+      document.documentElement.classList.remove("dark-mode");
     }
 
     // Sync button icons
     syncUI(theme);
 
-    // Wire up events for all toggle button IDs
+    // Wire up events directly to toggle button IDs
     var toggleButtons = ["themeToggle", "mobileThemeToggle", "dropdownThemeToggle"];
     toggleButtons.forEach(function (id) {
       var btn = document.getElementById(id);
       if (btn) {
-        // Remove old event listeners by cloning
-        var freshBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(freshBtn, btn);
-
-        freshBtn.addEventListener("click", function (e) {
+        btn.addEventListener("click", function (e) {
           e.preventDefault();
           e.stopPropagation();
           toggleTheme();
         });
 
-        freshBtn.addEventListener("touchend", function (e) {
+        btn.addEventListener("touchend", function (e) {
           e.preventDefault();
           e.stopPropagation();
           toggleTheme();

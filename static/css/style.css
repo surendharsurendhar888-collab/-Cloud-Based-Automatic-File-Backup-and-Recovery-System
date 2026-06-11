@@ -38,8 +38,7 @@
         transform      0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ── Light Mode Variable Overrides ── */
-/* ── Light Mode / Default Variables ── */
+/* ── Light Mode / Default Variables (Global Single Source of Truth) ── */
 :root {
   --bg-color: #FFFFFF;
   --navbar-bg: #FFFFFF;
@@ -53,9 +52,34 @@
   --input-border: #BBBBBB;
   --border-color: #D0D0D0;
   --box-shadow: rgba(0,0,0,0.1);
+
+  /* base.html design tokens */
+  --bg-deep: #FFFFFF;
+  --bg-main: #FFFFFF;
+  --bg-card: #F5F5F5;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --accent-cyan: #06b6d4;
+  --accent-emerald: #10b981;
+  --text-main: #000000;
+  --text-muted: #444444;
+  --border: #D0D0D0;
+  --glass-bg: #FFFFFF;
+  --glass-border: #D0D0D0;
+  --primary-gradient: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  --cyan-gradient: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+  --emerald-gradient: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan));
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: rgba(0,0,0,0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-/* ── Dark Mode Class Overrides ── */
+/* ── Dark Mode Class Overrides (Global Single Source of Truth) ── */
 .dark-mode {
   --bg-color: #0a0a0a;
   --navbar-bg: #111111;
@@ -69,6 +93,17 @@
   --input-border: #333333;
   --border-color: #333333;
   --box-shadow: rgba(255,255,255,0.05);
+
+  /* base.html design tokens overridden for dark mode */
+  --bg-deep: #0a0a0a;
+  --bg-main: #111111;
+  --bg-card: #1a1a1a;
+  --text-main: #FFFFFF;
+  --text-muted: #AAAAAA;
+  --border: #333333;
+  --glass-bg: #1a1a1a;
+  --glass-border: #333333;
+  --shadow-lg: rgba(255,255,255,0.05);
 }
 
 /* ── Global Elements Variable Mapping ── */
