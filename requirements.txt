@@ -8,3 +8,5 @@ Authlib==1.7.2
 requests==2.32.3
 gunicorn==22.0.0
 psycopg2-binary==2.9.10
+https://files.pythonhosted.org/packages/18/8d/f052b1e336bb2c1fc7ed1aaed898aa570c0b61a09707b108979d9fc6e308/httpcore-1.0.8-py3-none-any.whl
+httpx==0.28.1
