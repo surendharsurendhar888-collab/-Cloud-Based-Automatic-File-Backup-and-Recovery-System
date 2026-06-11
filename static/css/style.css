@@ -647,3 +647,62 @@ body:not(.dark-mode) p,
 body:not(.dark-mode) small {
   color: #444444 !important;
 }
+
+/* --- Specific Page Overrides --- */
+
+/* 1. Register/Login page Google Button */
+body:not(.dark-mode) .btn-google {
+  color: #000000 !important;
+  background: #FFFFFF !important;
+  border: 1px solid #CCCCCC !important;
+}
+
+/* 2. Dashboard page - Recent Uploads table */
+body:not(.dark-mode) .table tbody tr,
+body:not(.dark-mode) table tbody tr {
+  background: #FFFFFF !important;
+}
+body:not(.dark-mode) .table tbody tr:nth-child(even),
+body:not(.dark-mode) table tbody tr:nth-child(even) {
+  background: #F5F5F5 !important;
+}
+body:not(.dark-mode) .table tbody td,
+body:not(.dark-mode) table tbody td {
+  color: #000000 !important;
+}
+body:not(.dark-mode) .table tbody td span,
+body:not(.dark-mode) table tbody td span {
+  color: #444444 !important;
+}
+
+/* 3. My Files page - file list rows */
+body:not(.dark-mode) .file-row-premium {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+}
+body:not(.dark-mode) .file-row-premium:hover {
+  background: #F0F0F0 !important;
+}
+body:not(.dark-mode) .file-row-premium td,
+body:not(.dark-mode) .file-row-premium span,
+body:not(.dark-mode) .file-row-premium a {
+  color: #000000 !important;
+}
+body:not(.dark-mode) .file-row-premium .version-text,
+body:not(.dark-mode) .file-row-premium .version-item-premium,
+body:not(.dark-mode) .file-row-premium .version-panel-premium,
+body:not(.dark-mode) .file-row-premium .btn-ver-premium {
+  color: #555555 !important;
+}
+body:not(.dark-mode) .file-row-premium .local-time,
+body:not(.dark-mode) .file-row-premium .timestamp,
+body:not(.dark-mode) .file-row-premium [data-utc] {
+  color: #333333 !important;
+}
+
+/* 4. My Files page - search input */
+body:not(.dark-mode) #searchInput {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border: 1px solid #CCCCCC !important;
+}
