@@ -499,3 +499,151 @@ html { scroll-behavior: smooth; }
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
 }
+
+/* ============================================================
+   LIGHT MODE CRITICAL CSS OVERRIDES (!important)
+   ============================================================ */
+
+/* --- Background fixes --- */
+body:not(.dark-mode) {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+body:not(.dark-mode) .card,
+body:not(.dark-mode) .glass-panel,
+body:not(.dark-mode) .auth-card,
+body:not(.dark-mode) .insight-card,
+body:not(.dark-mode) .settings-card,
+body:not(.dark-mode) .profile-panel-premium,
+body:not(.dark-mode) .glass-card {
+  background: #F5F5F5 !important;
+  background-color: #F5F5F5 !important;
+}
+
+body:not(.dark-mode) table tr,
+body:not(.dark-mode) .responsive-table-stack tbody tr {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+body:not(.dark-mode) table tr:nth-child(even),
+body:not(.dark-mode) .responsive-table-stack tbody tr:nth-child(even) {
+  background: #F9F9F9 !important;
+  background-color: #F9F9F9 !important;
+}
+
+body:not(.dark-mode) table thead,
+body:not(.dark-mode) table thead th,
+body:not(.dark-mode) .files-table-premium thead {
+  background: #E8E8E8 !important;
+  background-color: #E8E8E8 !important;
+}
+
+body:not(.dark-mode) .navbar-glass,
+body:not(.dark-mode) .navbar {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+body:not(.dark-mode) .modal-content,
+body:not(.dark-mode) .modal-body,
+body:not(.dark-mode) .modal-header,
+body:not(.dark-mode) .modal-footer {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+body:not(.dark-mode) .dropdown-menu,
+body:not(.dark-mode) .dropdown-menu-end,
+body:not(.dark-mode) .profile-panel-premium {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+}
+
+body:not(.dark-mode) .offcanvas {
+  background: #F8F8F8 !important;
+  background-color: #F8F8F8 !important;
+}
+
+body:not(.dark-mode) input,
+body:not(.dark-mode) textarea,
+body:not(.dark-mode) select,
+body:not(.dark-mode) .form-control,
+body:not(.dark-mode) .form-select,
+body:not(.dark-mode) .form-control-custom {
+  background: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  border: 1px solid #BBBBBB !important;
+}
+
+/* --- Text visibility fixes --- */
+body:not(.dark-mode) p,
+body:not(.dark-mode) span:not(.btn):not(.badge):not(.navbar-brand-premium):not(.text-gradient-blue):not(.text-gradient-purple),
+body:not(.dark-mode) h1,
+body:not(.dark-mode) h2,
+body:not(.dark-mode) h3,
+body:not(.dark-mode) h4,
+body:not(.dark-mode) h5,
+body:not(.dark-mode) h6,
+body:not(.dark-mode) li,
+body:not(.dark-mode) td,
+body:not(.dark-mode) th,
+body:not(.dark-mode) label,
+body:not(.dark-mode) small,
+body:not(.dark-mode) div:not(.btn):not(.badge):not(.progress-bar):not(.profile-avatar-sm):not(.timeline-icon) {
+  color: #000000 !important;
+}
+
+body:not(.dark-mode) .card,
+body:not(.dark-mode) .card-body,
+body:not(.dark-mode) .glass-panel,
+body:not(.dark-mode) .auth-card,
+body:not(.dark-mode) .insight-card,
+body:not(.dark-mode) .settings-card,
+body:not(.dark-mode) .profile-panel-premium,
+body:not(.dark-mode) .modal-content,
+body:not(.dark-mode) .glass-card {
+  color: #000000 !important;
+}
+
+body:not(.dark-mode) table td,
+body:not(.dark-mode) table tr {
+  color: #000000 !important;
+}
+
+body:not(.dark-mode) .text-muted {
+  color: #555555 !important;
+}
+
+body:not(.dark-mode) .filename,
+body:not(.dark-mode) [data-filename],
+body:not(.dark-mode) .file-name,
+body:not(.dark-mode) td:first-child span,
+body:not(.dark-mode) .text-truncate {
+  color: #000000 !important;
+}
+
+body:not(.dark-mode) .local-time,
+body:not(.dark-mode) .timestamp,
+body:not(.dark-mode) .date,
+body:not(.dark-mode) [data-utc] {
+  color: #222222 !important;
+}
+
+body:not(.dark-mode) .version-text,
+body:not(.dark-mode) .version-item-premium,
+body:not(.dark-mode) .version-panel-premium,
+body:not(.dark-mode) .btn-ver-premium,
+body:not(.dark-mode) td[data-label="Version"] {
+  color: #333333 !important;
+}
+
+body:not(.dark-mode) .subtext,
+body:not(.dark-mode) .description,
+body:not(.dark-mode) .subtitle,
+body:not(.dark-mode) p,
+body:not(.dark-mode) small {
+  color: #444444 !important;
+}
